@@ -7,11 +7,13 @@ import cookieParser from 'cookie-parser';
 import createError from 'http-errors';
 import morgan from 'morgan';
 
+import frontRouter from './loaders/front-routes';
+
 const server = express();
 
 // view engine setup
 server.set('view engine', 'pug');
-server.set('views', path.join(__dirname, 'views'));
+server.set('views', path.join(__dirname, '../src/views'));
 
 // compress all responses with gzip
 server.use(compression());
@@ -25,6 +27,8 @@ server.use(express.urlencoded({extended: false}));
 server.use(cookieParser());
 // process public files
 server.use(express.static(path.join(__dirname, '../public')));
+
+frontRouter(server);
 
 // catch 404 and forward to error handler
 server.use((req, res, next) => {
