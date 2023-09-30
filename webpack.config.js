@@ -1,32 +1,49 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const PugPlugin = require('pug-plugin');
 
 module.exports = {
-  target: 'node',
   mode: process.env.NODE_ENV,
   devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
-  entry: './src/server.ts',
+  entry: {
+    index: './src-front/views/index.pug',
+  },
   output: {
-    filename: 'server.js', path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, process.env.DIRNAME),
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
     alias: {
-      src: path.resolve(__dirname, 'src'),
-    }
+      src: path.resolve(__dirname, 'src-front/scripts'),
+      styles: path.resolve(__dirname, 'src-front/stylesheets'),
+    },
   },
   module: {
     rules: [
+      {
+        test: /\.pug$/,
+        loader: PugPlugin.loader,
+      },
+      {
+        test: /\.(css|sass|scss)$/,
+        use: ['css-loader', 'sass-loader'],
+      },
       {
         test: /\.tsx?$/,
         use: ['babel-loader', 'ts-loader'],
         exclude: /node_modules/,
       },
-      {
-        test: /\.s[ac]ss$/i,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      }],
+    ],
   },
+  plugins: [
+    new PugPlugin({
+      js: {
+        filename: 'scripts/[name].[contenthash:8].js',
+      },
+      css: {
+        filename: 'styles/[name].[contenthash:8].css',
+      },
+    }),
+  ],
   // Exclude node_modules from the bundle
   externals: [nodeExternals()],
 };

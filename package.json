@@ -6,10 +6,13 @@
     "@types/node": "^20.7.1",
     "babel-loader": "^9.1.3",
     "cross-env": "^7.0.3",
+    "css-loader": "^6.8.1",
     "husky": "^8.0.3",
     "nodemon": "^3.0.1",
+    "pug-plugin": "^4.9.9",
     "rimraf": "^5.0.5",
     "sass": "^1.68.0",
+    "sass-loader": "^13.3.2",
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
@@ -19,7 +22,6 @@
   },
   "name": "social-network",
   "version": "1.0.0",
-  "main": "app.ts",
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint && npm run test"
@@ -28,7 +30,7 @@
   "scripts": {
     "build": "rimraf ./build && npx tsc",
     "start": "npm run build && node build/server",
-    "build-webpack": "cross-env NODE_ENV=development npx webpack",
+    "build-webpack": "rimraf ./dist.webpack && cross-env NODE_ENV=development DIRNAME='dist.webpack' npx webpack",
     "start-webpack": "npm run build-webpack && node dist/server"
   },
   "author": "",

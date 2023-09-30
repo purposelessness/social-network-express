@@ -1,0 +1,15 @@
+doctype html
+html(lang='en')
+  head
+    title Social network
+    style=require('styles/style.scss?inline')
+    block header
+  body
+    block outer
+    div(class='header')
+      a(href='/')
+        i(class='fa-solid fa-house')
+        span Home
+    div(class='container')
+      block content
+    block scripts
