@@ -1,5 +1,6 @@
 .idea/
 node_modules/
+dist/
 build/
 package-lock.json
 src/views/*.html

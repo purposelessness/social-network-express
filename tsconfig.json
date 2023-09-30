@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "es2022",
+    "module": "es2022",
     "lib": ["es5", "es6", "dom"],
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
-      "src/*": ["./*"]
+      "src/*": ["./*"],
     },
     "esModuleInterop": true,
     "noPropertyAccessFromIndexSignature": true,
