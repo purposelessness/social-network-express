@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "es2022",
-    "lib": ["es5", "es6", "dom"],
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
-      "src/*": ["./*"],
+      "~src/*": ["./*"],
+      "~services/*": ["./services/*"],
     },
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "noPropertyAccessFromIndexSignature": true,
     "outDir": "./build",
@@ -15,10 +16,12 @@
     "removeComments": true,
     "sourceMap": true,
     "strict": true,
-    "moduleResolution": "node",
     "strictNullChecks": true,
     "resolveJsonModule": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "build"]
+  "exclude": ["node_modules", "build"],
+  "tsc-alias": {
+    "resolveFullPaths": true
+  }
 }

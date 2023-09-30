@@ -1,4 +1,4 @@
-import * as path from "path";
+import path from "path";
 
 import express from 'express';
 
@@ -7,13 +7,10 @@ import cookieParser from 'cookie-parser';
 import createError from 'http-errors';
 import morgan from 'morgan';
 
-import frontRouter from './loaders/front-routes';
+import {__src_dir} from '~src/config';
+import {frontRouter} from '~src/loaders/front-routes';
 
 const server = express();
-
-// view engine setup
-server.set('view engine', 'pug');
-server.set('views', path.join(__dirname, '../src/views'));
 
 // compress all responses with gzip
 server.use(compression());
@@ -26,7 +23,7 @@ server.use(express.urlencoded({extended: false}));
 // process cookies
 server.use(cookieParser());
 // process public files
-server.use(express.static(path.join(__dirname, '../public')));
+server.use(express.static(path.join(__src_dir, '../public')));
 
 frontRouter(server);
 

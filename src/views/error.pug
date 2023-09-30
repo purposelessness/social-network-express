@@ -1,9 +1,0 @@
-block content
-  if error && error.status
-    h1 #{error.status} #{message}
-  else
-    h2 #{message}
-  if error && error.stack
-    pre Error stack: #{error.stack}
-  else
-    pre Error stack is missing
