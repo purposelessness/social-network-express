@@ -3,43 +3,49 @@ import * as v from 'valibot';
 
 import {parseInteger} from '~src/parsers/common';
 import {BaseUserSchema, UserSchema} from '~src/parsers/user';
-import {User} from './user-repository.entities';
 import {UserRepository} from './user-repository.service';
 
 export class UserRepositoryController {
   constructor(private readonly userRepository: UserRepository) {
   }
 
-  public getUserById = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<User | undefined> => {
+  public getUserById = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const id = parseInteger('id', req.params['id']);
-    return this.userRepository.getUserById(id);
+    res.status(200).json((await this.userRepository.getUserById(id)).toJson());
   };
 
-  public getUserByName = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<User | undefined> => {
+  public getUserByName = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const name = req.params['name'];
-    return this.userRepository.getUserByName(name);
+    res.status(200).json((await this.userRepository.getUserByName(name)).toJson());
   };
 
-  public createUser = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<User | undefined> => {
+  public createUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userEntity = v.parse(BaseUserSchema, req.body);
-    return this.userRepository.createUser(userEntity);
+    res.status(201).json((await this.userRepository.createUser(userEntity)).toJson());
   };
 
-  public updateUser = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
+  public updateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userEntity = v.parse(UserSchema, req.body);
-    return this.userRepository.updateUser(userEntity);
+    await this.userRepository.updateUser(userEntity);
+    res.status(200);
   };
 
-  public deleteUser = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
+  public deleteUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const id = parseInteger('id', req.params['id']);
-    return this.userRepository.deleteUser(id);
+    await this.userRepository.deleteUser(id);
+    res.status(200);
   };
 
-  public save = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
-    return this.userRepository.save();
+  public save = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    await this.userRepository.save();
+    res.status(200);
   };
 
-  public async getUsers(): Promise<User[]> {
-    return this.userRepository.getUsers();
+  public getUsers = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    let json = [];
+    for (const user of await this.userRepository.getUsers()) {
+      json.push(user.toJson());
+    }
+    res.status(200).json(json);
   }
 }

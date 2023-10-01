@@ -37,9 +37,9 @@ export class User implements Stringable, Jsonable {
 
   public toJson(): any {
     return {
-      id: this.id,
+      id: this.id.toString(),
       name: this.name,
-      messageIds: this.messageIds,
+      messageIds: this.messageIds.map((id) => id.toString()),
     };
   }
 
