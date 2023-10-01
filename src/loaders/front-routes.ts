@@ -1,4 +1,4 @@
-import express from "express";
+import {Express} from "express";
 
-export const frontRouter = (server: express.Express) => {
+export default (server: Express) => {
 };

@@ -1,9 +1,9 @@
+extends layout
+
 block content
-  if error && error.status
-    h1 #{error.status} #{message}
-  else
-    h2 #{message}
-  if error && error.stack
-    pre Error stack: #{error.stack}
-  else
-    pre Error stack is missing
+  h1(id='error-title') Error
+  h2(id='error-message') Message
+  pre(id='error-stack') Stack
+
+block scripts
+  script(src=require('scripts/error/index.ts'))

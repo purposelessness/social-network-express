@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "build": "rimraf ./build && npx tsc && npx tsc-alias",
-    "build-webpack": "rimraf ./dist.webpack && cross-env NODE_ENV=development DIRNAME='public' npx webpack",
+    "build-webpack": "rimraf ./public && cross-env NODE_ENV=development DIRNAME='public' npx webpack",
     "start": "npm run build && npm run build-webpack && node build/server",
     "fast-start": "npm run build && node build/server"
   },
@@ -27,7 +27,6 @@
     "css-loader": "^6.8.1",
     "express": "^4.18.2",
     "husky": "^8.0.3",
-    "jquery": "^3.7.1",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
     "pug": "^3.0.2",
@@ -48,5 +47,8 @@
   "author": "",
   "version": "1.0.0",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "jquery": "^3.7.1"
+  }
 }

@@ -1,5 +1,8 @@
 const path = require('path');
+
+const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
+
 const PugPlugin = require('pug-plugin');
 
 module.exports = {
@@ -7,13 +10,14 @@ module.exports = {
   devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
   entry: {
     index: './src-front/views/index.pug',
+    error: './src-front/views/error.pug',
   },
   output: {
     path: path.resolve(__dirname, process.env.DIRNAME),
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, 'src-front/scripts'),
+      scripts: path.resolve(__dirname, 'src-front/scripts'),
       styles: path.resolve(__dirname, 'src-front/stylesheets'),
     },
   },
@@ -44,6 +48,4 @@ module.exports = {
       },
     }),
   ],
-  // Exclude node_modules from the bundle
-  externals: [nodeExternals()],
 };

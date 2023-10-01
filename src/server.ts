@@ -8,7 +8,8 @@ import createError from 'http-errors';
 import morgan from 'morgan';
 
 import {__src_dir} from '~src/config';
-import {frontRouter} from '~src/loaders/front-routes';
+import backendRouter from '~src/loaders/back-routes';
+import frontRouter from '~src/loaders/front-routes';
 
 const server = express();
 
@@ -25,6 +26,7 @@ server.use(cookieParser());
 // process public files
 server.use(express.static(path.join(__src_dir, '../public')));
 
+backendRouter(server);
 frontRouter(server);
 
 // catch 404 and forward to error handler

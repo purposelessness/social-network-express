@@ -4,8 +4,9 @@
     "baseUrl": "./src",
     "paths": {
       "~src/*": ["./*"],
-      "~services/*": ["./services/*"],
+      "~services/*": ["./services/*"]
     },
+    "allowSyntheticDefaultImports": true,
     "target": "es2022",
     "module": "es2022",
     "moduleResolution": "node",

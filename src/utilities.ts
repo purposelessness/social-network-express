@@ -17,7 +17,6 @@ export function safeCall<T>(func: MyFunc<T>) {
             e = new ServerError('Internal error');
           }
         }
-        console.error(e);
         next(e);
       });
 }
