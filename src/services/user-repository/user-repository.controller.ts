@@ -21,24 +21,25 @@ export class UserRepositoryController {
 
   public createUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userEntity = v.parse(BaseUserSchema, req.body);
-    res.status(201).json((await this.userRepository.createUser(userEntity)).toJson());
+    const userId = await this.userRepository.createUser(userEntity);
+    res.status(201).send(userId.toString());
   };
 
   public updateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userEntity = v.parse(UserSchema, req.body);
     await this.userRepository.updateUser(userEntity);
-    res.status(200);
+    res.status(200).send();
   };
 
   public deleteUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const id = parseInteger('id', req.params['id']);
     await this.userRepository.deleteUser(id);
-    res.status(200);
+    res.status(200).send(id.toString());
   };
 
   public save = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     await this.userRepository.save();
-    res.status(200);
+    res.status(200).send();
   };
 
   public getUsers = async (req: express.Request, res: express.Response, next: express.NextFunction) => {

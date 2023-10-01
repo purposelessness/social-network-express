@@ -32,10 +32,10 @@ export class UserRepository {
     throw new ClientError(`User with name ${name} does not exist`);
   }
 
-  public async createUser(userEntity: BaseUserInput): Promise<User> {
+  public async createUser(userEntity: BaseUserInput): Promise<bigint> {
     const user = new User(UserRepository.UNIQUE_ID++, userEntity.name);
     this.users.set(user.id, user);
-    return user;
+    return user.id;
   }
 
   public async updateUser(userEntity: UserInput): Promise<void> {
