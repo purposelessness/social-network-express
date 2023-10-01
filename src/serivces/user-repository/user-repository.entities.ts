@@ -1,5 +1,12 @@
 import {Jsonable, Stringable} from "~src/types/utilities";
 
+export interface IUserEntity {
+  id?: number;
+  name: string;
+  email: string;
+  birthDate: Date;
+}
+
 export class User implements Stringable, Jsonable {
   private internalMessageIds: Set<number> = new Set();
 

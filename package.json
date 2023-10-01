@@ -3,9 +3,8 @@
   "type": "module",
   "scripts": {
     "build": "rimraf ./build && npx tsc && npx tsc-alias",
-    "start": "npm run build && node build/server",
     "build-webpack": "rimraf ./dist.webpack && cross-env NODE_ENV=development DIRNAME='public' npx webpack",
-    "start-webpack": "npm run build-webpack"
+    "start": "npm run build && npm run build-webpack && node build/server"
   },
   "husky": {
     "hooks": {
