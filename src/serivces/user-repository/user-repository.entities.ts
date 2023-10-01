@@ -1,38 +1,31 @@
-import {Jsonable, Stringable} from "~src/types/utilities";
-
-export interface IUserEntity {
-  id?: number;
-  name: string;
-  email: string;
-  birthDate: Date;
-}
+import {Jsonable, Stringable} from '~src/types/utilities';
 
 export class User implements Stringable, Jsonable {
-  private internalMessageIds: Set<number> = new Set();
+  private internalMessageIds: Set<bigint> = new Set();
 
   constructor(
-      public readonly id: number,
+      public readonly id: bigint,
       public name: string,
   ) {
   }
 
-  public get messageIds(): number[] {
+  public get messageIds(): bigint[] {
     return [...this.internalMessageIds];
   }
 
-  public set messageIds(messageIds: number[] | Set<number>) {
+  public set messageIds(messageIds: bigint[] | Set<bigint>) {
     this.internalMessageIds = new Set(messageIds);
   }
 
-  public addMessageId(messageId: number): void {
+  public addMessageId(messageId: bigint): void {
     this.internalMessageIds.add(messageId);
   }
 
-  public removeMessageId(messageId: number): void {
+  public removeMessageId(messageId: bigint): void {
     this.internalMessageIds.delete(messageId);
   }
 
-  public hasMessageId(messageId: number): boolean {
+  public hasMessageId(messageId: bigint): boolean {
     return this.internalMessageIds.has(messageId);
   }
 
