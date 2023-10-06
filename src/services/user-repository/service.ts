@@ -2,12 +2,11 @@ import path from 'path';
 import fs from 'fs';
 
 import {__src_dir} from '~src/config';
-import {BaseUserInput, UserInput} from '~src/parsers/user';
-import {User} from './user-repository.entities';
+import {BaseUserRecord, UserRecord, User} from './entities';
 import {ClientError} from '~src/types/errors';
 
 export class UserRepository {
-  private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'users.json');
+  private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'user-repository.json');
   private static UNIQUE_ID = 0n;
 
   private users: Map<bigint, User> = new Map();
@@ -32,13 +31,13 @@ export class UserRepository {
     throw new ClientError(`User with name ${name} does not exist`);
   }
 
-  public async createUser(userEntity: BaseUserInput): Promise<bigint> {
+  public async createUser(userEntity: BaseUserRecord): Promise<bigint> {
     const user = new User(UserRepository.UNIQUE_ID++, userEntity.name);
     this.users.set(user.id, user);
     return user.id;
   }
 
-  public async updateUser(userEntity: UserInput): Promise<void> {
+  public async updateUser(userEntity: UserRecord): Promise<void> {
     if (!this.users.has(userEntity.id)) {
       throw new ClientError(`User with id ${userEntity.id} does not exist`);
     }

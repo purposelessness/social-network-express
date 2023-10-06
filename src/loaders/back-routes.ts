@@ -2,7 +2,7 @@ import express from 'express';
 import * as v from 'valibot';
 
 import {ExceptionWithCodeSchema} from '~src/parsers/errors';
-import userRepository from '~services/user-repository/user-repository';
+import userRepository from '~services/user-repository';
 
 function errorHandler(err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) {
   if (v.is(ExceptionWithCodeSchema, err)) {
@@ -21,7 +21,7 @@ function errorHandler(err: unknown, req: express.Request, res: express.Response,
 }
 
 export default (server: express.Express) => {
-  server.use('/api', userRepository.router.getRouter());
+  server.use('/api/user-repository', userRepository.router.getRouter());
 
   server.use('/api', errorHandler);
 };

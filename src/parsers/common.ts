@@ -10,6 +10,10 @@ export function IntegerSchema(name: string) {
   );
 }
 
+export function IntegerSetSchema(name: string) {
+  return v.set(IntegerSchema(name));
+}
+
 export function parseInteger(name: string, obj: unknown): bigint {
   return v.parse(IntegerSchema(name), obj);
 }
