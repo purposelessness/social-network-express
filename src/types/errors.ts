@@ -9,6 +9,13 @@ export class ClientError extends ErrorWithCode {
   }
 }
 
+export class NotFoundError extends ClientError {
+  constructor(message: string) {
+    super(message, 404);
+    this.name = 'NotFoundError';
+  }
+}
+
 export class ServerError extends Error {
   constructor(message: string, public readonly code: number = 500) {
     super(message);
