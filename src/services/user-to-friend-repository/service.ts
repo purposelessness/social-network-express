@@ -4,6 +4,7 @@ import fs from 'fs';
 import {__src_dir} from '~src/config';
 import {Entry, Request} from './entities';
 import {ClientError} from '~src/types/errors';
+import {checkUserExistence} from '~src/libraries/checkers';
 
 export class UserToFriendRepository {
   private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'user-to-friend-repository.json');
@@ -32,6 +33,9 @@ export class UserToFriendRepository {
   }
 
   public async addFriend(request: Request): Promise<void> {
+    await checkUserExistence(request.uid);
+    await checkUserExistence(request.friendId);
+
     if (this.entries.has(request.uid)) {
       this.entries.get(request.uid)!.add(request.friendId);
     } else {

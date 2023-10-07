@@ -4,7 +4,7 @@ import fs from 'fs';
 import {__src_dir} from '~src/config';
 import {User, UserEntryRecord, UserRecord} from './entities';
 import {NotFoundError} from '~src/types/errors';
-import serialize from '~src/parsers/converter';
+import serialize from '~src/libraries/parsers/converter';
 
 export class UserRepository {
   private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'user-repository.json');

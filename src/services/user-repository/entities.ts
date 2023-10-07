@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 
-import {DateSchema, EmailSchema, IntegerSchema} from '~src/parsers/common';
+import {DateSchema, EmailSchema, IntegerSchema} from '~src/libraries/parsers/common';
 
 const USER_SCHEMA = {
   name: v.string('Name must be a string'),

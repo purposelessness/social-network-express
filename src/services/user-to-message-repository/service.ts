@@ -3,7 +3,8 @@ import fs from 'fs';
 
 import {__src_dir} from '~src/config';
 import {Entry, Request} from './entities';
-import {NotFoundError, ServerError} from '~src/types/errors';
+import {NotFoundError} from '~src/types/errors';
+import {checkMessageExistence, checkUserExistence} from '~src/libraries/checkers';
 
 export class UserToMessageRepository {
   private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'user-to-message-repository.json');
@@ -32,7 +33,9 @@ export class UserToMessageRepository {
   }
 
   public async addMessage(request: Request): Promise<void> {
-    await UserToMessageRepository.checkUserExistence(request.uid);
+    await checkUserExistence(request.uid);
+    await checkMessageExistence(request.messageId);
+
     if (this.entries.has(request.uid)) {
       this.entries.get(request.uid)!.add(request.messageId);
     } else {
@@ -67,18 +70,5 @@ export class UserToMessageRepository {
       }
       console.log(`[UserToMessageRepository] Saved entries to ${UserToMessageRepository.SAVE_FILENAME}`);
     });
-  }
-
-  private static async checkUserExistence(uid: bigint): Promise<void> {
-    const response = await fetch(`http://localhost:3000/api/user-repository/exists/${uid}`, {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw new ServerError(`Failed to check if user with id ${uid} exists`);
-    }
-    const exists = await response.json();
-    if (!exists) {
-      throw new NotFoundError(`User with id ${uid} does not exist in user-to-message repository`);
-    }
   }
 }

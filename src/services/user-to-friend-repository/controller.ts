@@ -1,7 +1,7 @@
 import express from 'express';
 import * as v from 'valibot';
 
-import {parseInteger} from '~src/parsers/common';
+import {parseInteger} from '~src/libraries/parsers/common';
 import {RequestSchema} from './entities';
 import {UserToFriendRepository} from './service';
 

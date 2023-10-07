@@ -1,10 +1,10 @@
 import express from 'express';
 import * as v from 'valibot';
 
-import {parseInteger} from '~src/parsers/common';
+import {parseInteger} from '~src/libraries/parsers/common';
 import {RequestSchema} from './entities';
 import {UserToMessageRepository} from './service';
-import serialize from '~src/parsers/converter';
+import serialize from '~src/libraries/parsers/converter';
 
 export class UserToMessageRepositoryController {
   constructor(private readonly repository: UserToMessageRepository) {

@@ -1,6 +1,6 @@
 import {Router} from 'express';
 
-import {safeCall} from '~src/utilities';
+import {safeCall} from '~src/libraries/utilities';
 import {UserRepositoryController} from './controller';
 
 export class UserRepositoryRouter {

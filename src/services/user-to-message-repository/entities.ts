@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 
-import {IntegerSchema} from '~src/parsers/common';
+import {IntegerSchema} from '~src/libraries/parsers/common';
 
 const EntrySchema = v.object({
   uid: IntegerSchema('uid'),
