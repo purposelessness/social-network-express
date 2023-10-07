@@ -10,12 +10,12 @@ export function IntegerSchema(name: string) {
   );
 }
 
-export function IntegerSetSchema(name: string) {
-  return v.set(IntegerSchema(name));
-}
-
 export function parseInteger(name: string, obj: unknown): bigint {
   return v.parse(IntegerSchema(name), obj);
+}
+
+export function parseIntegerArray(name: string, obj: unknown): bigint[] {
+  return v.parse(v.array(IntegerSchema(name)), obj);
 }
 
 export function EmailSchema(name: string) {
@@ -24,8 +24,14 @@ export function EmailSchema(name: string) {
 }
 
 export const isDate = (str: string): boolean => /^\d{4}-\d{2}-\d{2}$/.test(str);
+export const isFullDate = (str: string): boolean => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(str);
 
 export function DateSchema(name: string) {
   return v.string(`${name} must be a string`,
       [v.custom(isDate, `${name}: incorrect date format`)]);
+}
+
+export function FullDateSchema(name: string) {
+  return v.string(`${name} must be a string`,
+      [v.custom(isFullDate, `${name}: incorrect full date format`)]);
 }

@@ -2,9 +2,8 @@ import path from 'path';
 import fs from 'fs';
 
 import {__src_dir} from '~src/config';
-import {User, UserEntryRecord, UserRecord} from './entities';
+import {BaseUserRecord, UserRecord, User} from './entities';
 import {ClientError} from '~src/types/errors';
-import serialize from '~src/parsers/converter';
 
 export class UserRepository {
   private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'user-repository.json');
@@ -32,17 +31,17 @@ export class UserRepository {
     throw new ClientError(`User with name ${name} does not exist`);
   }
 
-  public async createUser(userEntity: UserRecord): Promise<bigint> {
-    const user = new User(UserRepository.UNIQUE_ID++, userEntity.name, userEntity.email, userEntity.birthDate);
+  public async createUser(userEntity: BaseUserRecord): Promise<bigint> {
+    const user = new User(UserRepository.UNIQUE_ID++, userEntity.name);
     this.users.set(user.id, user);
     return user.id;
   }
 
-  public async updateUser(userEntity: UserEntryRecord): Promise<void> {
+  public async updateUser(userEntity: UserRecord): Promise<void> {
     if (!this.users.has(userEntity.id)) {
       throw new ClientError(`User with id ${userEntity.id} does not exist`);
     }
-    const user = new User(userEntity.id, userEntity.name, userEntity.email, userEntity.birthDate);
+    const user = new User(userEntity.id, userEntity.name);
     this.users.set(user.id, user);
   }
 
@@ -56,7 +55,7 @@ export class UserRepository {
   public async save(): Promise<void> {
     const json = [];
     for (const user of this.users.values()) {
-      json.push(serialize(user));
+      json.push(user.toJson());
     }
     const data = JSON.stringify(json);
     if (!fs.existsSync(path.dirname(UserRepository.SAVE_FILENAME))) {
