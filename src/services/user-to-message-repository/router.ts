@@ -13,7 +13,7 @@ export class UserToMessageRepositoryRouter {
     router.get('/', safeCall(this.controller.getEntries));
     router.get('/:id(\\d+)', safeCall(this.controller.getEntryById));
     router.post('/', safeCall(this.controller.addMessage));
-    router.delete('/:id(\\d+)', safeCall(this.controller.deleteMessage));
+    router.delete('/', safeCall(this.controller.deleteMessage));
     router.post('/save', safeCall(this.controller.save));
 
     return router;

@@ -3,6 +3,14 @@ import * as v from 'valibot';
 
 import {ExceptionWithCodeSchema} from '~src/parsers/errors';
 import userRepository from '~services/user-repository';
+import userToMessageRepository from '~services/user-to-message-repository';
+
+export default (server: express.Express) => {
+  server.use('/api/user-repository', userRepository.router.getRouter());
+  server.use('/api/user-to-message-repository', userToMessageRepository.router.getRouter());
+
+  server.use('/api', errorHandler);
+};
 
 function errorHandler(err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) {
   if (v.is(ExceptionWithCodeSchema, err)) {
@@ -19,9 +27,3 @@ function errorHandler(err: unknown, req: express.Request, res: express.Response,
     res.status(500).json(err);
   }
 }
-
-export default (server: express.Express) => {
-  server.use('/api/user-repository', userRepository.router.getRouter());
-
-  server.use('/api', errorHandler);
-};

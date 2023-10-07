@@ -1,10 +1,10 @@
 import * as v from 'valibot';
 
-import {IntegerSchema, IntegerSetSchema} from '~src/parsers/common';
+import {IntegerSchema} from '~src/parsers/common';
 
 const EntrySchema = v.object({
   uid: IntegerSchema('uid'),
-  ids: IntegerSetSchema('ids'),
+  messageIds: v.array(IntegerSchema('messageId')),
 });
 
 export const RequestSchema = v.object({
