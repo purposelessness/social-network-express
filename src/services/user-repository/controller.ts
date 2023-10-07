@@ -20,6 +20,11 @@ export class UserRepositoryController {
     res.status(200).json(serialize(await this.repository.getUserByName(name)));
   };
 
+  public doesUserExist = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const id = parseInteger('id', req.params['id']);
+    res.status(200).json(await this.repository.doesUserExist(id));
+  };
+
   public createUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const userEntity = v.parse(UserSchema, req.body);
     res.status(201).send(serialize(await this.repository.createUser(userEntity)));

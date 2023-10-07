@@ -13,6 +13,7 @@ export class UserRepositoryRouter {
     router.get('/', safeCall(this.controller.getUsers));
     router.get('/:id(\\d+)', safeCall(this.controller.getUserById));
     router.get('/name/:name', safeCall(this.controller.getUserByName));
+    router.get('/exists/:id(\\d+)', safeCall(this.controller.doesUserExist));
     router.post('/', safeCall(this.controller.createUser));
     router.put('/', safeCall(this.controller.updateUser));
     router.delete('/:id(\\d+)', safeCall(this.controller.deleteUser));

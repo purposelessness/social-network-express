@@ -3,7 +3,7 @@ import fs from 'fs';
 
 import {__src_dir} from '~src/config';
 import {User, UserEntryRecord, UserRecord} from './entities';
-import {ClientError} from '~src/types/errors';
+import {NotFoundError} from '~src/types/errors';
 import serialize from '~src/parsers/converter';
 
 export class UserRepository {
@@ -18,7 +18,7 @@ export class UserRepository {
 
   public async getUserById(id: bigint): Promise<User> {
     if (!this.users.has(id)) {
-      throw new ClientError(`User with id ${id} does not exist`);
+      throw new NotFoundError(`User with id ${id} does not exist`);
     }
     return this.users.get(id)!;
   }
@@ -29,7 +29,11 @@ export class UserRepository {
         return user;
       }
     }
-    throw new ClientError(`User with name ${name} does not exist`);
+    throw new NotFoundError(`User with name ${name} does not exist`);
+  }
+
+  public async doesUserExist(id: bigint): Promise<boolean> {
+    return this.users.has(id);
   }
 
   public async createUser(userEntity: UserRecord): Promise<bigint> {
@@ -40,7 +44,7 @@ export class UserRepository {
 
   public async updateUser(userEntity: UserEntryRecord): Promise<void> {
     if (!this.users.has(userEntity.id)) {
-      throw new ClientError(`User with id ${userEntity.id} does not exist`);
+      throw new NotFoundError(`User with id ${userEntity.id} does not exist`);
     }
     const user = new User(userEntity.id, userEntity.name, userEntity.email, userEntity.birthDate);
     this.users.set(user.id, user);
@@ -48,7 +52,7 @@ export class UserRepository {
 
   public async deleteUser(id: bigint): Promise<void> {
     if (!this.users.has(id)) {
-      throw new ClientError(`User with id ${id} does not exist`);
+      throw new NotFoundError(`User with id ${id} does not exist`);
     }
     this.users.delete(id);
   }
