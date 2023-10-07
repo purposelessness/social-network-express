@@ -24,7 +24,7 @@ server.use(express.urlencoded({extended: false}));
 // process cookies
 server.use(cookieParser());
 // process public files
-server.use(express.static(path.join(__src_dir, '../public')));
+server.use(express.static(path.join(__src_dir, 'public')));
 
 backendRouter(server);
 frontRouter(server);

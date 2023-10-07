@@ -1,8 +1,10 @@
 import path from 'path';
 import fs from 'fs';
 
+import * as v from 'valibot';
+
 import {__src_dir} from '~src/config';
-import {User, UserEntryRecord, UserRecord} from './entities';
+import {User, UserEntryRecord, UserEntrySchema, UserRecord} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import serialize from '~src/libraries/parsers/converter';
 
@@ -11,6 +13,10 @@ export class UserRepository {
   private static UNIQUE_ID = 0n;
 
   private users: Map<bigint, User> = new Map();
+
+  constructor() {
+    this.load();
+  }
 
   public async getUsers(): Promise<User[]> {
     return [...this.users.values()];
@@ -55,6 +61,26 @@ export class UserRepository {
       throw new NotFoundError(`User with id ${id} does not exist`);
     }
     this.users.delete(id);
+  }
+
+  private load() {
+    if (!fs.existsSync(UserRepository.SAVE_FILENAME)) {
+      console.log(`[UserRepository] File ${UserRepository.SAVE_FILENAME} does not exist`);
+      return;
+    }
+    let data = fs.readFileSync(UserRepository.SAVE_FILENAME, 'utf8');
+    let users: UserEntryRecord[];
+    try {
+      users = v.parse(v.array(UserEntrySchema), JSON.parse(data));
+    } catch (e) {
+      console.warn(`[UserRepository] Failed to parse users data`);
+      console.log(e);
+      return;
+    }
+    for (const user of users) {
+      this.users.set(user.id, new User(user.id, user.name, user.email, user.birthDate));
+    }
+    console.log(`[UserRepository] Loaded users from ${UserRepository.SAVE_FILENAME}`);
   }
 
   public async save(): Promise<void> {

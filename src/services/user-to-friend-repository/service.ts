@@ -1,8 +1,10 @@
 import path from 'path';
 import fs from 'fs';
 
+import * as v from 'valibot';
+
 import {__src_dir} from '~src/config';
-import {Entry, Request} from './entities';
+import {Entry, EntrySchema, Request} from './entities';
 import {ClientError} from '~src/types/errors';
 import {checkUserExistence} from '~src/libraries/checkers';
 
@@ -11,12 +13,16 @@ export class UserToFriendRepository {
 
   private readonly entries: Map<bigint, Set<bigint>> = new Map();
 
+  constructor() {
+    this.load();
+  }
+
   public async getEntries(): Promise<Entry[]> {
     const entries: Entry[] = [];
     for (const [uid, ids] of this.entries.entries()) {
       entries.push({
         uid: uid,
-        ids: ids,
+        ids: [...ids],
       });
     }
     return entries;
@@ -24,22 +30,26 @@ export class UserToFriendRepository {
 
   public async getEntryById(id: bigint): Promise<Entry> {
     if (!this.entries.has(id)) {
-      throw new ClientError(`User with id ${id} does not exist in user-to-friend repository`);
+      return {
+        uid: id,
+        ids: [],
+      };
     }
+
     return {
       uid: id,
-      ids: this.entries.get(id)!,
+      ids: [...this.entries.get(id)!],
     };
   }
 
   public async addFriend(request: Request): Promise<void> {
     await checkUserExistence(request.uid);
-    await checkUserExistence(request.friendId);
+    await checkUserExistence(request.id);
 
     if (this.entries.has(request.uid)) {
-      this.entries.get(request.uid)!.add(request.friendId);
+      this.entries.get(request.uid)!.add(request.id);
     } else {
-      this.entries.set(request.uid, new Set([request.friendId]));
+      this.entries.set(request.uid, new Set([request.id]));
     }
   }
 
@@ -47,7 +57,26 @@ export class UserToFriendRepository {
     if (!this.entries.has(request.uid)) {
       throw new ClientError(`User with id ${request.uid} does not exist in user-to-friend repository`);
     }
-    this.entries.get(request.uid)!.delete(request.friendId);
+    this.entries.get(request.uid)!.delete(request.id);
+  }
+
+  private load() {
+    if (!fs.existsSync(UserToFriendRepository.SAVE_FILENAME)) {
+      console.log(`[UserToFriendRepository] File ${UserToFriendRepository.SAVE_FILENAME} does not exist`);
+      return;
+    }
+    let data = fs.readFileSync(UserToFriendRepository.SAVE_FILENAME, 'utf8');
+    let entries: Entry[];
+    try {
+      entries = v.parse(v.array(EntrySchema), JSON.parse(data));
+    } catch (e) {
+      console.warn(`[UserToFriendRepository] Failed to parse user-to-friend data`);
+      return;
+    }
+    for (const entry of entries) {
+      this.entries.set(entry.uid, new Set(entry.ids));
+    }
+    console.log(`[UserToFriendRepository] Loaded user-to-friend data from ${UserToFriendRepository.SAVE_FILENAME}`);
   }
 
   public async save(): Promise<void> {

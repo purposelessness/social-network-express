@@ -2,14 +2,14 @@ import * as v from 'valibot';
 
 import {IntegerSchema} from '~src/libraries/parsers/common';
 
-const EntrySchema = v.object({
+export const EntrySchema = v.object({
   uid: IntegerSchema('uid'),
-  ids: v.set(IntegerSchema('ids')),
+  ids: v.array(IntegerSchema('ids')),
 });
 
 export const RequestSchema = v.object({
   uid: IntegerSchema('uid'),
-  friendId: IntegerSchema('friendId'),
+  id: IntegerSchema('id'),
 });
 
 export type Entry = v.Output<typeof EntrySchema>;

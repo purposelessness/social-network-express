@@ -19,10 +19,9 @@ export function parseInteger(name: string, obj: unknown): bigint {
 }
 
 export function parseIntegerArray(name: string, obj: unknown): bigint[] {
-  const arrayRegex = /^\[(\d+\s*,?\s*)+]$/;
+  const arrayRegex = /^(\d+\s*,?\s*)+$/;
   if (typeof obj === 'string' && arrayRegex.test(obj)) {
-    const formatterObj = obj.slice(1, -1);
-    obj = formatterObj.split(',').map((str) => str.trim());
+    obj = obj.split(',').map((str) => str.trim());
   }
   return v.parse(v.array(IntegerSchema(name), `${name} is not an array`), obj);
 }

@@ -1,8 +1,10 @@
 import path from 'path';
 import fs from 'fs';
 
+import * as v from 'valibot';
+
 import {__src_dir} from '~src/config';
-import {Entry, Request} from './entities';
+import {Entry, EntrySchema, Request} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import {checkMessageExistence, checkUserExistence} from '~src/libraries/checkers';
 
@@ -11,12 +13,16 @@ export class UserToMessageRepository {
 
   private readonly entries: Map<bigint, Set<bigint>> = new Map();
 
+  constructor() {
+    this.load();
+  }
+
   public async getEntries(): Promise<Entry[]> {
     const entries: Entry[] = [];
     for (const [uid, messageIds] of this.entries.entries()) {
       entries.push({
         uid: uid,
-        messageIds: [...messageIds],
+        ids: [...messageIds],
       });
     }
     return entries;
@@ -24,11 +30,15 @@ export class UserToMessageRepository {
 
   public async getEntryById(id: bigint): Promise<Entry> {
     if (!this.entries.has(id)) {
-      throw new NotFoundError(`User with id ${id} does not exist in user-to-message repository`);
+      return {
+        uid: id,
+        ids: [],
+      };
     }
+
     return {
       uid: id,
-      messageIds: [...this.entries.get(id)!],
+      ids: [...this.entries.get(id)!],
     };
   }
 
@@ -48,6 +58,26 @@ export class UserToMessageRepository {
       throw new NotFoundError(`User with id ${request.uid} does not exist in user-to-message repository`);
     }
     this.entries.get(request.uid)!.delete(request.messageId);
+  }
+
+  private load() {
+    if (!fs.existsSync(UserToMessageRepository.SAVE_FILENAME)) {
+      console.log(`[UserToMessageRepository] File ${UserToMessageRepository.SAVE_FILENAME} does not exist`);
+      return;
+    }
+    let data = fs.readFileSync(UserToMessageRepository.SAVE_FILENAME, 'utf8');
+    let entries: Entry[];
+    try {
+      entries = v.parse(v.array(EntrySchema), JSON.parse(data));
+    } catch (e) {
+      console.warn(`[UserToMessageRepository] Failed to parse user-to-message data`);
+      console.log(e);
+      return;
+    }
+    for (const entry of entries) {
+      this.entries.set(entry.uid, new Set(entry.ids));
+    }
+    console.log(`[UserToMessageRepository] Loaded user-to-message data from ${UserToMessageRepository.SAVE_FILENAME}`);
   }
 
   public async save(): Promise<void> {

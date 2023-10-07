@@ -4,18 +4,19 @@ import * as v from 'valibot';
 import {parseInteger} from '~src/libraries/parsers/common';
 import {RequestSchema} from './entities';
 import {UserToFriendRepository} from './service';
+import serialize from '~src/libraries/parsers/converter';
 
 export class UserToFriendRepositoryController {
   constructor(private readonly repository: UserToFriendRepository) {
   }
 
   public getEntries = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.status(200).json(await this.repository.getEntries());
+    res.status(200).json(serialize(await this.repository.getEntries()));
   };
 
   public getEntryById = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const id = parseInteger('id', req.params['id']);
-    res.status(200).json(await this.repository.getEntryById(id));
+    res.status(200).json(serialize(await this.repository.getEntryById(id)));
   };
 
   public addFriend = async (req: express.Request, res: express.Response, next: express.NextFunction) => {

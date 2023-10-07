@@ -1,16 +1,23 @@
 import path from 'path';
 import fs from 'fs';
 
+import * as v from 'valibot';
+
 import {__src_dir} from '~src/config';
-import {MessageEntryRecord, MessageRecord} from './entities';
+import {MessageEntryRecord, MessageEntrySchema, MessageRecord} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import {checkUserExistence} from '~src/libraries/checkers';
+import {json} from 'express';
 
 export class MessageRepository {
   private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'message-repository.json');
   private static UNIQUE_ID = 0n;
 
   private messages: Map<bigint, MessageEntryRecord> = new Map();
+
+  constructor() {
+    this.load();
+  }
 
   public getMessages = async (ids: bigint[]): Promise<MessageEntryRecord[]> => {
     const messages: MessageEntryRecord[] = [];
@@ -53,11 +60,33 @@ export class MessageRepository {
     this.messages.delete(id);
   };
 
+  private load() {
+    if (!fs.existsSync(MessageRepository.SAVE_FILENAME)) {
+      console.log(`[MessageRepository] File ${MessageRepository.SAVE_FILENAME} does not exist`);
+      return;
+    }
+    let data = fs.readFileSync(MessageRepository.SAVE_FILENAME, 'utf8');
+    let messages: MessageEntryRecord[];
+    try {
+      messages = v.parse(v.array(MessageEntrySchema), JSON.parse(data));
+    } catch (e) {
+      console.warn(`[MessageRepository] Failed to parse message data`);
+      console.log(e);
+      return;
+    }
+    for (const message of messages) {
+      this.messages.set(message.id, message);
+    }
+    console.log(`[MessageRepository] Loaded messages from ${MessageRepository.SAVE_FILENAME}`);
+  }
+
+
   public save = async (): Promise<void> => {
     const json = [];
     for (const message of this.messages.values()) {
       json.push({
         id: message.id.toString(),
+        uid: message.uid.toString(),
         text: message.text,
         createdAt: message.createdAt,
       });

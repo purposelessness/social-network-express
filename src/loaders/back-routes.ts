@@ -2,14 +2,18 @@ import express from 'express';
 import * as v from 'valibot';
 
 import {ExceptionWithCodeSchema} from '~src/libraries/parsers/errors';
+import newsFeedService from '~services/news-feed';
 import messageRepository from '~services/message-repository';
 import userRepository from '~services/user-repository';
+import userToFriendRepository from '~services/user-to-friend-repository';
 import userToMessageRepository from '~services/user-to-message-repository';
 
 export default (server: express.Express) => {
   server.use('/api/user-repository', userRepository.router.getRouter());
-  server.use('/api/user-to-message-repository', userToMessageRepository.router.getRouter());
   server.use('/api/message-repository', messageRepository.router.getRouter());
+  server.use('/api/user-to-friend-repository', userToFriendRepository.router.getRouter());
+  server.use('/api/user-to-message-repository', userToMessageRepository.router.getRouter());
+  server.use('/api/news-feed', newsFeedService.router.getRouter());
 
   server.use('/api', errorHandler);
 };

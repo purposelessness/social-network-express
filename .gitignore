@@ -6,3 +6,4 @@ build/
 package-lock.json
 src/views/*.html
 *.map
+data/

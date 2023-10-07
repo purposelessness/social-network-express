@@ -13,7 +13,7 @@ export class UserToFriendRepositoryRouter {
     router.get('/', safeCall(this.controller.getEntries));
     router.get('/:id(\\d+)', safeCall(this.controller.getEntryById));
     router.post('/', safeCall(this.controller.addFriend));
-    router.delete('/:id(\\d+)', safeCall(this.controller.deleteFriend));
+    router.delete('/', safeCall(this.controller.deleteFriend));
     router.post('/save', safeCall(this.controller.save));
 
     return router;
