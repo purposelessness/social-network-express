@@ -10,9 +10,11 @@ export function safeCall<T>(func: MyFunc<T>) {
       func(req, res, next).catch((e) => {
         if (e instanceof v.ValiError) {
           e = new ClientError(e.message);
-        } else if (!(e instanceof ClientError)) {
+        } else if (!(e instanceof ClientError) && !(e instanceof ServerError)) {
           if (e instanceof Error) {
+            let oe = e;
             e = new ServerError(e.message);
+            e.stack = oe.stack;
           } else {
             e = new ServerError('Internal error');
           }
