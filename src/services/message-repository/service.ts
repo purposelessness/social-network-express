@@ -2,72 +2,77 @@ import path from 'path';
 import fs from 'fs';
 
 import {__src_dir} from '~src/config';
-import {BaseUserRecord, UserRecord, User} from './entities';
-import {ClientError} from '~src/types/errors';
+import {MessageEntryRecord, MessageRecord} from './entities';
+import {NotFoundError} from '~src/types/errors';
+import {checkUserExistence} from '~src/libraries/checkers';
 
-export class UserRepository {
-  private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'user-repository.json');
+export class MessageRepository {
+  private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'message-repository.json');
   private static UNIQUE_ID = 0n;
 
-  private users: Map<bigint, User> = new Map();
+  private messages: Map<bigint, MessageEntryRecord> = new Map();
 
-  public async getUsers(): Promise<User[]> {
-    return [...this.users.values()];
-  }
-
-  public async getUserById(id: bigint): Promise<User> {
-    if (!this.users.has(id)) {
-      throw new ClientError(`User with id ${id} does not exist`);
-    }
-    return this.users.get(id)!;
-  }
-
-  public async getUserByName(name: string): Promise<User> {
-    for (const user of this.users.values()) {
-      if (user.name === name) {
-        return user;
+  public getMessages = async (ids: bigint[]): Promise<MessageEntryRecord[]> => {
+    const messages: MessageEntryRecord[] = [];
+    for (const id of ids) {
+      if (this.messages.has(id)) {
+        messages.push(this.messages.get(id)!);
       }
     }
-    throw new ClientError(`User with name ${name} does not exist`);
-  }
+    return messages;
+  };
 
-  public async createUser(userEntity: BaseUserRecord): Promise<bigint> {
-    const user = new User(UserRepository.UNIQUE_ID++, userEntity.name);
-    this.users.set(user.id, user);
-    return user.id;
-  }
-
-  public async updateUser(userEntity: UserRecord): Promise<void> {
-    if (!this.users.has(userEntity.id)) {
-      throw new ClientError(`User with id ${userEntity.id} does not exist`);
+  public getMessage = async (id: bigint): Promise<MessageEntryRecord> => {
+    if (!this.messages.has(id)) {
+      throw new NotFoundError(`Message with id ${id} does not exist in message repository`);
     }
-    const user = new User(userEntity.id, userEntity.name);
-    this.users.set(user.id, user);
-  }
+    return this.messages.get(id)!;
+  };
 
-  public async deleteUser(id: bigint): Promise<void> {
-    if (!this.users.has(id)) {
-      throw new ClientError(`User with id ${id} does not exist`);
+  public doesMessageExist = async (id: bigint): Promise<boolean> => {
+    return this.messages.has(id);
+  };
+
+  public addMessage = async (message: MessageRecord): Promise<bigint> => {
+    await checkUserExistence(message.uid);
+
+    const id = MessageRepository.UNIQUE_ID++;
+    this.messages.set(id, {
+      id: id,
+      uid: message.uid,
+      text: message.text,
+      createdAt: message.createdAt,
+    });
+    return id;
+  };
+
+  public deleteMessage = async (id: bigint): Promise<void> => {
+    if (!this.messages.has(id)) {
+      throw new NotFoundError(`Message with id ${id} does not exist in message repository`);
     }
-    this.users.delete(id);
-  }
+    this.messages.delete(id);
+  };
 
-  public async save(): Promise<void> {
+  public save = async (): Promise<void> => {
     const json = [];
-    for (const user of this.users.values()) {
-      json.push(user.toJson());
+    for (const message of this.messages.values()) {
+      json.push({
+        id: message.id.toString(),
+        text: message.text,
+        createdAt: message.createdAt,
+      });
     }
     const data = JSON.stringify(json);
-    if (!fs.existsSync(path.dirname(UserRepository.SAVE_FILENAME))) {
-      fs.mkdirSync(path.dirname(UserRepository.SAVE_FILENAME));
-      console.log(`[UserRepository] Created directory ${path.dirname(UserRepository.SAVE_FILENAME)}`);
+    if (!fs.existsSync(path.dirname(MessageRepository.SAVE_FILENAME))) {
+      fs.mkdirSync(path.dirname(MessageRepository.SAVE_FILENAME));
+      console.log(`[MessageRepository] Created directory ${path.dirname(MessageRepository.SAVE_FILENAME)}`);
     }
-    fs.writeFile(UserRepository.SAVE_FILENAME, data, (err) => {
+    fs.writeFile(MessageRepository.SAVE_FILENAME, data, (err) => {
       if (err) {
-        console.warn(`[UserRepository] Failed to save users to ${UserRepository.SAVE_FILENAME}`);
+        console.warn(`[MessageRepository] Failed to save messages to ${MessageRepository.SAVE_FILENAME}`);
         throw err;
       }
-      console.log(`[UserRepository] Saved users to ${UserRepository.SAVE_FILENAME}`);
+      console.log(`[MessageRepository] Saved messages to ${MessageRepository.SAVE_FILENAME}`);
     });
-  }
+  };
 }

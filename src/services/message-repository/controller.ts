@@ -1,52 +1,43 @@
 import express from 'express';
 import * as v from 'valibot';
 
-import {parseInteger} from '~src/parsers/common';
-import {BaseUserSchema, UserSchema} from './entities';
-import {UserRepository} from './service';
+import {parseInteger, parseIntegerArray} from '~src/libraries/parsers/common';
+import {MessageSchema} from './entities';
+import {MessageRepository} from './service';
+import serialize from '~src/libraries/parsers/converter';
 
-export class UserRepositoryController {
-  constructor(private readonly repository: UserRepository) {
+export class MessageRepositoryController {
+  constructor(private readonly repository: MessageRepository) {
   }
 
-  public getUserById = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  public getMessages = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const ids = parseIntegerArray('messageIds', req.query['ids']);
+    res.status(200).json(serialize(await this.repository.getMessages(ids)));
+  };
+
+  public getMessage = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const id = parseInteger('id', req.params['id']);
-    res.status(200).json((await this.repository.getUserById(id)).toJson());
+    res.status(200).json(serialize(await this.repository.getMessage(id)));
   };
 
-  public getUserByName = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const name = req.params['name'];
-    res.status(200).json((await this.repository.getUserByName(name)).toJson());
+  public doesMessageExist = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const id = parseInteger('id', req.params['id']);
+    res.status(200).json(serialize(await this.repository.doesMessageExist(id)));
   };
 
-  public createUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const userEntity = v.parse(BaseUserSchema, req.body);
-    const userId = await this.repository.createUser(userEntity);
-    res.status(201).send(userId.toString());
+  public addMessage = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const message = v.parse(MessageSchema, req.body);
+    res.status(201).send(serialize(await this.repository.addMessage(message)));
   };
 
-  public updateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const userEntity = v.parse(UserSchema, req.body);
-    await this.repository.updateUser(userEntity);
+  public deleteMessage = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const id = parseInteger('id', req.params['id']);
+    await this.repository.deleteMessage(id);
     res.status(200).send();
-  };
-
-  public deleteUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const id = parseInteger('id', req.params['id']);
-    await this.repository.deleteUser(id);
-    res.status(200).send(id.toString());
   };
 
   public save = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     await this.repository.save();
     res.status(200).send();
   };
-
-  public getUsers = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let json = [];
-    for (const user of await this.repository.getUsers()) {
-      json.push(user.toJson());
-    }
-    res.status(200).json(json);
-  }
 }

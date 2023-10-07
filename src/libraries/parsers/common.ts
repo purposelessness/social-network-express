@@ -1,11 +1,15 @@
 import * as v from 'valibot';
 
-export const isInteger = (str: string): boolean => /^-?\d+$/.test(str as string);
+export const isIntegerString = (str: string): boolean => /^-?\d+$/.test(str as string);
 
-export function IntegerSchema(name: string) {
+export function IntegerSchema(name: number | string) {
+  const integerSchema = v.number('${name} must be an integer',
+      [v.integer(`${name} must be an integer`)]);
+  const integerStringSchema = v.string(`${name} must be a string`,
+      [v.custom(isIntegerString, `${name}: incorrect integer format`)]);
+
   return v.transform(
-      v.string(`${name} must be a string`,
-          [v.custom(isInteger, `${name}: incorrect integer format`)]),
+      v.union([integerSchema, integerStringSchema], `${name} must be an integer or a string of an integer`),
       (obj) => BigInt(obj),
   );
 }
@@ -15,7 +19,12 @@ export function parseInteger(name: string, obj: unknown): bigint {
 }
 
 export function parseIntegerArray(name: string, obj: unknown): bigint[] {
-  return v.parse(v.array(IntegerSchema(name)), obj);
+  const arrayRegex = /^\[(\d+\s*,?\s*)+]$/;
+  if (typeof obj === 'string' && arrayRegex.test(obj)) {
+    const formatterObj = obj.slice(1, -1);
+    obj = formatterObj.split(',').map((str) => str.trim());
+  }
+  return v.parse(v.array(IntegerSchema(name), `${name} is not an array`), obj);
 }
 
 export function EmailSchema(name: string) {

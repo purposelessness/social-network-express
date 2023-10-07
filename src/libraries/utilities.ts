@@ -9,10 +9,12 @@ export function safeCall<T>(func: MyFunc<T>) {
   return (req: express.Request, res: express.Response, next: express.NextFunction) =>
       func(req, res, next).catch((e) => {
         if (e instanceof v.ValiError) {
+          const oe = e;
           e = new ClientError(e.message);
+          e.stack = oe.stack;
         } else if (!(e instanceof ClientError) && !(e instanceof ServerError)) {
           if (e instanceof Error) {
-            let oe = e;
+            const oe = e;
             e = new ServerError(e.message);
             e.stack = oe.stack;
           } else {

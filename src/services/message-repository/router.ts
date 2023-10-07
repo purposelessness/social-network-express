@@ -1,21 +1,20 @@
 import {Router} from 'express';
 
-import {safeCall} from '~src/utilities';
-import {UserRepositoryController} from './controller';
+import {safeCall} from '~src/libraries/utilities';
+import {MessageRepositoryController} from './controller';
 
 export class UserRepositoryRouter {
-  constructor(private readonly controller: UserRepositoryController) {
+  constructor(private readonly controller: MessageRepositoryController) {
   }
 
   public getRouter() {
     const router = Router();
 
-    router.get('/', safeCall(this.controller.getUsers));
-    router.get('/:id(\\d+)', safeCall(this.controller.getUserById));
-    router.get('/name/:name', safeCall(this.controller.getUserByName));
-    router.post('/', safeCall(this.controller.createUser));
-    router.put('/', safeCall(this.controller.updateUser));
-    router.delete('/:id(\\d+)', safeCall(this.controller.deleteUser));
+    router.get('/', safeCall(this.controller.getMessages));
+    router.get('/:id(\\d+)', safeCall(this.controller.getMessage));
+    router.get('/exists/:id(\\d+)', safeCall(this.controller.doesMessageExist));
+    router.post('/', safeCall(this.controller.addMessage));
+    router.delete('/:id(\\d+)', safeCall(this.controller.deleteMessage));
     router.post('/save', safeCall(this.controller.save));
 
     return router;
