@@ -31,8 +31,8 @@ server.use(express.static(path.join(__src_dir, 'public')));
 backendRouter(server);
 frontRouter(server);
 
-const privateKey = fs.readFileSync('/etc/ssl/private/purposeless.social-network.key', 'utf8');
-const certificate = fs.readFileSync('/etc/ssl/certs/purposeless.social-network.crt', 'utf8');
+const privateKey = fs.readFileSync(path.join(__src_dir, 'sslcert/purposeless.social-network.key'), 'utf-8');
+const certificate = fs.readFileSync(path.join(__src_dir, 'sslcert/purposeless.social-network.crt'), 'utf8');
 
 const credentials = {
   key: privateKey,
