@@ -1,7 +1,8 @@
 import {NotFoundError, ServerError} from '~src/types/errors';
+import {__tvm_key, __url} from '~src/config';
 
 export async function checkUserExistence(uid: bigint): Promise<void> {
-  const response = await fetch(`http://localhost:3000/api/user-repository/exists/${uid}`, {
+  const response = await fetch(`${__url}/api/user-repository/exists/${uid}`, {
     method: 'GET',
   });
   if (!response.ok) {
@@ -14,8 +15,11 @@ export async function checkUserExistence(uid: bigint): Promise<void> {
 }
 
 export async function checkMessageExistence(id: bigint): Promise<void> {
-  const response = await fetch(`http://localhost:3000/api/message-repository/exists/${id}`, {
+  const response = await fetch(`${__url}/api/message-repository/exists/${id}`, {
     method: 'GET',
+    headers: {
+      Authorization: __tvm_key,
+    },
   });
   if (!response.ok) {
     throw new ServerError(`Failed to check if message with id ${id} exists`);

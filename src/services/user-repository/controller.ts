@@ -2,7 +2,7 @@ import express from 'express';
 import * as v from 'valibot';
 
 import {parseInteger} from '~src/libraries/parsers/common';
-import {UserEntrySchema, UserSchema} from './entities';
+import {UserSchema} from './entities';
 import {UserRepository} from './service';
 import serialize from '~src/libraries/parsers/converter';
 
@@ -26,12 +26,13 @@ export class UserRepositoryController {
   };
 
   public createUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const userEntity = v.parse(UserSchema, req.body);
-    res.status(201).send(serialize(await this.repository.createUser(userEntity)));
+    const userRecord = v.parse(UserSchema, req.body);
+    await this.repository.createUser(userRecord);
+    res.status(201).send();
   };
 
   public updateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const userEntity = v.parse(UserEntrySchema, req.body);
+    const userEntity = v.parse(UserSchema, req.body);
     await this.repository.updateUser(userEntity);
     res.status(200).send();
   };
@@ -51,5 +52,5 @@ export class UserRepositoryController {
     const users = await this.repository.getUsers();
     let json = users.map(user => serialize(user));
     res.status(200).json(json);
-  }
+  };
 }

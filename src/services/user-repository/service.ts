@@ -4,13 +4,12 @@ import fs from 'fs';
 import * as v from 'valibot';
 
 import {__src_dir} from '~src/config';
-import {User, UserEntryRecord, UserEntrySchema, UserRecord} from './entities';
+import {User, UserRecord, UserSchema} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import serialize from '~src/libraries/parsers/converter';
 
 export class UserRepository {
   private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'user-repository.json');
-  private static UNIQUE_ID = 0n;
 
   private users: Map<bigint, User> = new Map();
 
@@ -42,13 +41,12 @@ export class UserRepository {
     return this.users.has(id);
   }
 
-  public async createUser(userEntity: UserRecord): Promise<bigint> {
-    const user = new User(UserRepository.UNIQUE_ID++, userEntity.name, userEntity.email, userEntity.birthDate);
+  public async createUser(userRecord: UserRecord): Promise<void> {
+    const user = new User(userRecord.id, userRecord.name, userRecord.email, userRecord.birthDate);
     this.users.set(user.id, user);
-    return user.id;
   }
 
-  public async updateUser(userEntity: UserEntryRecord): Promise<void> {
+  public async updateUser(userEntity: UserRecord): Promise<void> {
     if (!this.users.has(userEntity.id)) {
       throw new NotFoundError(`User with id ${userEntity.id} does not exist`);
     }
@@ -69,9 +67,9 @@ export class UserRepository {
       return;
     }
     let data = fs.readFileSync(UserRepository.SAVE_FILENAME, 'utf8');
-    let users: UserEntryRecord[];
+    let users: UserRecord[];
     try {
-      users = v.parse(v.array(UserEntrySchema), JSON.parse(data));
+      users = v.parse(v.array(UserSchema), JSON.parse(data));
     } catch (e) {
       console.warn(`[UserRepository] Failed to parse users data`);
       console.log(e);

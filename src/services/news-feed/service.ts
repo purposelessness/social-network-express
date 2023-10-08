@@ -4,6 +4,7 @@ import serialize from '~src/libraries/parsers/converter';
 import {MessageEntryRecord, MessageEntrySchema} from '~services/message-repository/entities';
 import {EntrySchema as UserToMessageEntrySchema} from '~services/user-to-message-repository/entities';
 import {ServerError} from '~src/types/errors';
+import {__tvm_key, __url} from '~src/config';
 
 export class NewsFeedService {
   public generateNewsFeed = async (uid: bigint): Promise<MessageEntryRecord[]> => {
@@ -14,8 +15,11 @@ export class NewsFeedService {
   };
 
   private async getFriends(uid: bigint): Promise<bigint[]> {
-    const response = await fetch(`http://localhost:3000/api/user-to-friend-repository/${uid}`, {
+    const response = await fetch(`${__url}/api/user-to-friend-repository/${uid}`, {
       method: 'GET',
+      headers: {
+        Authorization: __tvm_key,
+      },
     });
     if (!response.ok) {
       console.warn(`[NewsFeedService] Error on getting friends of user with id ${uid}: ${response.statusText}`);
@@ -28,8 +32,11 @@ export class NewsFeedService {
   private async getMessageIds(uids: bigint[]): Promise<bigint[]> {
     const responses: Promise<Response>[] = [];
     for (const uid of uids) {
-      responses.push(fetch(`http://localhost:3000/api/user-to-message-repository/${uid}`, {
+      responses.push(fetch(`${__url}/api/user-to-message-repository/${uid}`, {
         method: 'GET',
+        headers: {
+          Authorization: __tvm_key,
+        },
       }));
     }
     const messageIds: bigint[] = [];
@@ -52,8 +59,11 @@ export class NewsFeedService {
     }
 
     const query = serialize(ids);
-    const response = await fetch(`http://localhost:3000/api/message-repository?ids=${query}`, {
+    const response = await fetch(`${__url}/api/message-repository?ids=${query}`, {
       method: 'GET',
+      headers: {
+        Authorization: __tvm_key,
+      },
     });
     if (!response.ok) {
       console.warn(`Error on getting messages content: ${response.statusText}`);
