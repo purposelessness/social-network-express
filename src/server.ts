@@ -1,10 +1,12 @@
+import fs from 'fs';
 import path from 'path';
+import http from 'http';
+import https from 'https';
 
 import express from 'express';
 
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import createError from 'http-errors';
 import morgan from 'morgan';
 
 import {__src_dir} from '~src/config';
@@ -29,22 +31,20 @@ server.use(express.static(path.join(__src_dir, 'public')));
 backendRouter(server);
 frontRouter(server);
 
-// catch 404 and forward to error handler
-server.use((req, res, next) => {
-  next(createError(404));
+const privateKey = fs.readFileSync('/etc/ssl/private/purposeless.social-network.key', 'utf8');
+const certificate = fs.readFileSync('/etc/ssl/certs/purposeless.social-network.crt', 'utf8');
+
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+};
+
+const httpServer = http.createServer(server);
+const httpsServer = https.createServer(credentials, server);
+
+httpServer.listen(8080, () => {
+  console.log('Server started at http://localhost:8080/');
 });
-
-// error handler
-server.use((err: any, req: express.Request, res: express.Response, _: Function) => {
-  // set locals, only providing error in development
-  res.locals['message'] = err.message;
-  res.locals['error'] = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-server.listen(3000, () => {
-  console.log('Server started at http://localhost:3000/');
+httpsServer.listen(8443, () => {
+  console.log('Server started at https://localhost:8443/');
 });
