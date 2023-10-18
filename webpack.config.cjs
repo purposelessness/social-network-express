@@ -3,49 +3,86 @@ const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 
-const PugPlugin = require('pug-plugin');
+function resolveFilename(fileData) {
+  console.log(fileData);
+  switch (fileData.contentHashType) {
+    case 'javascript':
+      return `${fileData.runtime}.js`;
+    default:
+      return `${fileData.runtime}`;
+  }
+}
 
 module.exports = {
   mode: process.env.NODE_ENV,
   devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
   entry: {
-    index: './src-front/views/index.pug',
-    error: './src-front/views/error.pug',
+    '/scripts/index': './src-front/scripts/index.ts',
+    '/scripts/error/index': './src-front/scripts/error/index.ts',
   },
   output: {
     path: path.resolve(__dirname, process.env.DIRNAME),
-  },
-  resolve: {
-    alias: {
-      scripts: path.resolve(__dirname, 'src-front/scripts'),
-      styles: path.resolve(__dirname, 'src-front/stylesheets'),
-    },
+    filename: (fileData) => resolveFilename(fileData),
   },
   module: {
     rules: [
       {
-        test: /\.pug$/,
-        loader: PugPlugin.loader,
+        test: /\.(ts|tsx)$/,
+        use: ['babel-loader', 'ts-loader'],
+        exclude: /node_modules/,
       },
       {
         test: /\.(css|sass|scss)$/,
         use: ['css-loader', 'sass-loader'],
       },
-      {
-        test: /\.tsx?$/,
-        use: ['babel-loader', 'ts-loader'],
-        exclude: /node_modules/,
-      },
     ],
   },
-  plugins: [
-    new PugPlugin({
-      js: {
-        filename: 'scripts/[name].[contenthash:8].js',
-      },
-      css: {
-        filename: 'styles/[name].[contenthash:8].css',
-      },
-    }),
-  ],
 };
+
+// const PugPlugin = require('pug-plugin');
+//
+// module.exports = {
+//   mode: process.env.NODE_ENV,
+//   devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
+//   entry: {
+//     index: './src-front/views/index.pug', error: './src-front/views/error.pug',
+//   },
+//   output: {
+//     path: path.resolve(__dirname, process.env.DIRNAME),
+//   },
+//   resolve: {
+//     alias: {
+//       scripts: path.resolve(__dirname, 'src-front/scripts'),
+//       styles: path.resolve(__dirname, 'src-front/styles'),
+//     },
+//   },
+//   module: {
+//     rules: [
+//       {
+//         test: /\.pug$/, loader: PugPlugin.loader,
+//       }, {
+//         test: /\.(css|sass|scss)$/, use: ['css-loader', 'sass-loader'],
+//       }, {
+//         test: /\.tsx?$/,
+//         use: ['babel-loader', 'ts-loader'],
+//         exclude: /node_modules/,
+//       }],
+//   },
+//   plugins: [
+//     new PugPlugin({
+//       js: {
+//         filename: (pathData) => createFilename(pathData, '.js'),
+//       },
+//       css: {
+//         filename: (pathData) => createFilename(pathData, '.css'),
+//       },
+//     })],
+// };
+//
+// function createFilename(pathData, ext) {
+//   const pathArray = path.relative(path.join(__dirname, 'src-front'),
+//       pathData.filename).split('.');
+//   pathArray.pop();
+//   console.log(pathArray.join('.'));
+//   return pathArray.join('.') + ext;
+// }

@@ -1,9 +1,15 @@
 extends layout
 
 block content
-  h1(id='error-title') Error
-  h2(id='error-message') Message
-  pre(id='error-stack') Stack
+  if errorTitle
+    h1(id='error-title')= errorTitle
+  else
+    h1(id='error-title') 500
+  if errorMessage
+    h2(id='error-message')= errorMessage
+  else
+    h2(id='error-message') Internal error
+  if errorStack
+    pre(id='error-stack')= errorStack
 
 block scripts
-  script(src=require('scripts/error/index.ts'))

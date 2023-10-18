@@ -1,8 +1,8 @@
 extends layout
 
 block content
-  h1 Social network
-  p Welcome to Social network
+  h1= title
+  p Welcome to #{title}
 
 block scripts
-  script(src=require('scripts/index.ts'))
+  script(src='/scripts/index.js')

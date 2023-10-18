@@ -1,0 +1,18 @@
+mixin formTextField(label, prefix, name, placeholder, required=true)
+  label(for=`${prefix}-${name}`)= label
+  input(type='text' name=name placeholder=placeholder id=`${prefix}-${name}` required=required)
+
+mixin formDateField(label, prefix, name, placeholder, required=true)
+  label(for=`${prefix}-${name}`)= label
+  input(type='date' name=name placeholder=placeholder id=`${prefix}-${name}` required=required)
+
+mixin checkboxField(label, name, value)
+  input(type='checkbox' name=name id=`${name}-${value}` value=value)
+  label(for=`${name}-${value}`)= label
+
+mixin userForm(prefix)
+  div(class='form-group')
+    +formTextField('Name', prefix, 'user-name', 'Enter Name')
+    +formDateField('Birth', prefix, 'user-birth', 'Enter Birth')
+    +formTextField('Email', prefix, 'user-email', 'Enter Email')
+    +formTextField('Password', prefix, 'user-password', 'Enter Password')

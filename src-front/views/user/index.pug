@@ -1,0 +1,28 @@
+extends ../layout
+
+include ../shared/popup
+include ../shared/forms
+
+mixin tableHeader(id, text)
+  th(id=id)
+    span= text
+
+block header
+  link(rel='stylesheet', href='/styles/book/style.css')
+
+block outer
+  +popup('add-user', 'Add user', 'Add')
+    +userForm('add-user')
+  +bottomNavigationBar()
+    +showPopupButton('add-user', 'Add user')
+
+block content
+  table(id='user-table', border='1')
+    tr
+      +tableHeader('user-id', 'ID')
+      +tableHeader('user-photo', 'Photo')
+      +tableHeader('user-info', 'Information')
+      +tableHeader('user-controls', 'Controls')
+
+block scripts
+  script(src='/scripts/user/index.js' type='module')
