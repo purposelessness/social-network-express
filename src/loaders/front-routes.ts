@@ -3,10 +3,16 @@ import express from 'express';
 import httpErrors from 'http-errors';
 
 export default (server: express.Express) => {
-  server.use('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.status(200).render('index', {
+  server.use('/home', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.status(200);
+    res.render('index', {
       title: 'Social network',
+      pageId: 'home',
     });
+  });
+
+  server.use('^/$', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.redirect('/home');
   });
 
   // create NotFoundError

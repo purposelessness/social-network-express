@@ -4,7 +4,6 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 
 function resolveFilename(fileData) {
-  console.log(fileData);
   switch (fileData.contentHashType) {
     case 'javascript':
       return `${fileData.runtime}.js`;
@@ -18,7 +17,6 @@ module.exports = {
   devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
   entry: {
     '/scripts/index': './src-front/scripts/index.ts',
-    '/scripts/error/index': './src-front/scripts/error/index.ts',
   },
   output: {
     path: path.resolve(__dirname, process.env.DIRNAME),
@@ -31,12 +29,9 @@ module.exports = {
         use: ['babel-loader', 'ts-loader'],
         exclude: /node_modules/,
       },
-      {
-        test: /\.(css|sass|scss)$/,
-        use: ['css-loader', 'sass-loader'],
-      },
     ],
   },
+  resolve: {extensions: ['.ts', '.tsx', '.js']},
 };
 
 // const PugPlugin = require('pug-plugin');
