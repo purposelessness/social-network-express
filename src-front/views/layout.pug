@@ -4,6 +4,7 @@ mixin navLi(pageId, pageName)
 
 doctype html
 html(lang='en')
+
   head
     title Social network
     meta(name="viewport" content="width=device-width, initial-scale=1")
@@ -11,8 +12,9 @@ html(lang='en')
     link(rel='stylesheet', href='/styles/style.css')
     block header
     div(id='pageId' class='d-none')= pageId
+
   body
-    block outer
+    div
       nav(class='navbar navbar-expand-lg bg-body-tertiary' role='navigation')
         div(class='container-fluid')
           a(class='navbar-brand', href='#') Navigation
@@ -21,7 +23,8 @@ html(lang='en')
           div(class='collapse navbar-collapse', id='navbarNav')
             ul(class='navbar-nav nav-underline')
               +navLi('home', 'Home')
-              +navLi('users', 'Users')
+              +navLi('user', 'Users')
+      block outer
     div(class='container')
       block content
     div

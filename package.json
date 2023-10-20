@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "build": "rimraf ./build && npx tsc && npx tsc-alias",
-    "build-webpack": "rimraf ./public && cross-env NODE_ENV=development DIRNAME='public' npx webpack",
+    "build-webpack": "rimraf ./public/scripts ./public/styles && cross-env NODE_ENV=development DIRNAME='public' npx webpack",
     "start": "npm run build && npm run build-webpack && node build/server",
     "fast-start": "npm run build && node build/server"
   },

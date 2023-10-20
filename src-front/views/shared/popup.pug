@@ -1,17 +1,10 @@
-mixin popup(prefix, title, submitButtonText, closeButtonText='Close')
-  dialog(class='popup-container' id=`${prefix}-popup-container`)
-    form(class='popup-form')
-      if title
-        label(class=`popup-form-title`)= title
-
-      block
-
-      button(type='submit' class='form-button')= submitButtonText
-      button(type='button' class='form-button cancel')= closeButtonText
-
-mixin showPopupButton(prefix, title)
-  button(class='show-popup-button' id=`${prefix}-show-popup-button`)= title
-
-mixin bottomNavigationBar()
-  div(class='bottom-navigation-bar')
-    block
+mixin popup(id)
+  div.modal.fade(tabindex='-1', aria-hidden='true', id=id)
+    div.modal-dialog
+      div.modal-content
+        div.modal-header
+          button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+        div.modal-body
+          img.img-fluid(src='https://picsum.photos/300/300', alt='Image')
+        div.modal-footer
+          button.btn.btn-secondary(data-bs-dismiss='modal') Close

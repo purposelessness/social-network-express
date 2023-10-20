@@ -11,6 +11,13 @@ export default (server: express.Express) => {
     });
   });
 
+  server.use('/user', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.status(200);
+    res.render('user/index', {
+      pageId: 'user',
+    });
+  });
+
   server.use('^/$', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.redirect('/home');
   });

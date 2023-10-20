@@ -17,6 +17,7 @@ module.exports = {
   devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
   entry: {
     '/scripts/index': './src-front/scripts/index.ts',
+    '/scripts/user/index': './src-front/scripts/user/index.ts',
   },
   output: {
     path: path.resolve(__dirname, process.env.DIRNAME),
