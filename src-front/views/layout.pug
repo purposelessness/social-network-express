@@ -1,6 +1,9 @@
-mixin navLi(pageId, pageName)
+mixin navLi(pageId, pageName, disabled=false)
   li(class='nav-item')
-    a(class='nav-link', id=`${pageId}NavLiA`, href=`/${pageId}`)= pageName
+    if (disabled)
+      a(class='nav-link disabled', id=`${pageId}NavLiA`, href=`/${pageId}`, aria-disabled='true')= pageName
+    else
+      a(class='nav-link', id=`${pageId}NavLiA`, href=`/${pageId}`)= pageName
 
 doctype html
 html(lang='en')
@@ -24,6 +27,7 @@ html(lang='en')
             ul(class='navbar-nav nav-underline')
               +navLi('home', 'Home')
               +navLi('user', 'Users')
+              +navLi('feed', 'Feed', true)
       block outer
     div(class='container')
       block content

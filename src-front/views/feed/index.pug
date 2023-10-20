@@ -1,0 +1,17 @@
+extends ../layout
+
+include ../shared/popup
+
+block content
+
+  table.table.table-hover#feedTable(data-uid=uid)
+    thead
+      tr
+        th(scope='col') Id
+        th(scope='col') Uid
+        th(scope='col') Text
+        th(scope='col') Created At
+    tbody
+
+block scripts
+  script(src='/scripts/feed/index.js')

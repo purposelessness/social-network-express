@@ -3,11 +3,11 @@ extends ../layout
 include ../shared/popup
 
 block content
-  h1 Users
 
   table.table.table-hover#usersTable
     thead
       tr
+        th(scope='col') Id
         th(scope='col') Image
         th(scope='col') Name
         th(scope='col') E-mail

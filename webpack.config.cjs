@@ -18,6 +18,7 @@ module.exports = {
   entry: {
     '/scripts/index': './src-front/scripts/index.ts',
     '/scripts/user/index': './src-front/scripts/user/index.ts',
+    '/scripts/feed/index': './src-front/scripts/feed/index.ts',
   },
   output: {
     path: path.resolve(__dirname, process.env.DIRNAME),

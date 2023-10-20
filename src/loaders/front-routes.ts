@@ -18,6 +18,14 @@ export default (server: express.Express) => {
     });
   });
 
+  server.use('/feed/:id(\\d+)', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.status(200);
+    res.render('feed/index', {
+      pageId: 'feed',
+      uid: req.params['id'],
+    });
+  });
+
   server.use('^/$', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.redirect('/home');
   });

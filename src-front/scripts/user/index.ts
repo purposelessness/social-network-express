@@ -48,8 +48,10 @@ function fillUserTableImpl(users: User[]): void {
   tbody.empty();
   for (const user of users) {
     const tr = $('<tr>');
+    tr.append($('<td>').text(user.id.toString()));
     tr.append($('<td>').append(createImageButton(`/img/user/${user.id}.jpg`)));
-    tr.append($('<td>').text(user.name));
+    const nameA = $('<a>').attr('href', `/feed/${user.id.toString()}`).text(user.name);
+    tr.append($('<td>').append(nameA));
     tr.append($('<td>').text(user.email));
     tr.append($('<td>').text(user.birthDate));
     tbody.append(tr);
