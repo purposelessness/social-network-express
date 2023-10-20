@@ -2,6 +2,7 @@ import {Router} from 'express';
 
 import {safeCall} from '~src/libraries/utilities';
 import {AuthProxyController} from './controller';
+import {Role} from '~services/auth-proxy/entities';
 
 export class AuthProxyRouter {
   constructor(private readonly controller: AuthProxyController) {
@@ -16,9 +17,16 @@ export class AuthProxyRouter {
     return router;
   }
 
-  public getGlobalRouter() {
+  public auth() {
     const router = Router();
     router.use(safeCall(this.controller.auth));
     return router;
   }
+
+  public permit(requiredRole: Role) {
+    const router = Router();
+    const permitFunc = this.controller.permit(requiredRole);
+    router.use(safeCall(permitFunc));
+    return router;
+  };
 }

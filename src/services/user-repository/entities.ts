@@ -26,11 +26,11 @@ export class User {
   ) {
   }
 
-  public static fromRecord(id: bigint, record: BaseUserRecord): User {
+  public static fromBaseRecord(id: bigint, record: BaseUserRecord): User {
     return new User(id, record.name, record.email, record.birthDate);
   }
 
-  public static fromEntryRecord(record: UserRecord): User {
+  public static fromRecord(record: UserRecord): User {
     return new User(record.id, record.name, record.email, record.birthDate);
   }
 }

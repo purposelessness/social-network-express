@@ -3,7 +3,7 @@ import express from 'express';
 import * as v from 'valibot';
 
 import {AuthProxyService} from './service';
-import {LoginRequestScheme, RegisterRequestScheme} from './entities';
+import {LoginRequestScheme, RegisterRequestScheme, Role} from './entities';
 import serialize from '~src/libraries/parsers/converter';
 
 export class AuthProxyController {
@@ -27,4 +27,11 @@ export class AuthProxyController {
     }
     next();
   };
+
+  public permit(requiredRole: Role) {
+    return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      await this.service.permit(req.body.authContext.uid, requiredRole);
+      next();
+    };
+  }
 }

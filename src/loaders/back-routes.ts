@@ -10,8 +10,7 @@ import userToFriendRepository from '~services/user-to-friend-repository';
 import userToMessageRepository from '~services/user-to-message-repository';
 
 export default (server: express.Express) => {
-  server.use(authProxy.router.getGlobalRouter());
-  server.use('/api', authProxy.router.getRouter());
+  server.use('/api', /*authProxy.router.auth(),*/ authProxy.router.getRouter());
 
   server.use('/api/user-repository', userRepository.router.getRouter());
   server.use('/api/message-repository', messageRepository.router.getRouter());

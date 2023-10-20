@@ -5,16 +5,16 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 
-import {__src_dir, __tvm_key, __url} from '~src/config';
+import {__project_dir, __tvm_key, __url} from '~src/config';
 import {LoginRequest, RegisterRequest, Role} from './entities';
 import {ClientError, NotFoundError, ServerError} from '~src/types/errors';
 import {BaseUserRecord, UserRecord} from '~services/user-repository/entities';
 import serialize from '~src/libraries/parsers/converter';
 
 export class AuthProxyService {
-  private static readonly AUTH_FILENAME = path.join(__src_dir, 'data', 'auth.json');
-  private static readonly UIDS_FILENAME = path.join(__src_dir, 'data', 'uids.json');
-  private static readonly ROLES_FILENAME = path.join(__src_dir, 'data', 'roles.json');
+  private static readonly AUTH_FILENAME = path.join(__project_dir, 'data', 'auth.json');
+  private static readonly UIDS_FILENAME = path.join(__project_dir, 'data', 'uids.json');
+  private static readonly ROLES_FILENAME = path.join(__project_dir, 'data', 'roles.json');
 
   private static readonly SALT_ROUNDS = 10;
   private static readonly SECRET_KEY = 'secret';
@@ -96,9 +96,17 @@ export class AuthProxyService {
         }
         request.body.authContext = {
           uid: payload['uid'],
-          role: payload['role'],
         };
       });
+    }
+  };
+
+  public permit = async (uid: bigint | undefined, requestedRole: Role) => {
+    if (uid == null) {
+      throw new ClientError('User is not found', 404);
+    }
+    if (!this.roles.has(uid) || this.roles.get(uid) != requestedRole) {
+      throw new ClientError('You don\'t have enough permissions', 403);
     }
   };
 

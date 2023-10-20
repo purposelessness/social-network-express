@@ -3,14 +3,13 @@ import fs from 'fs';
 
 import * as v from 'valibot';
 
-import {__src_dir} from '~src/config';
+import {__project_dir} from '~src/config';
 import {MessageEntryRecord, MessageEntrySchema, MessageRecord} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import {checkUserExistence} from '~src/libraries/checkers';
-import {json} from 'express';
 
 export class MessageRepository {
-  private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'message-repository.json');
+  private static readonly SAVE_FILENAME = path.join(__project_dir, 'data', 'message-repository.json');
   private static UNIQUE_ID = 0n;
 
   private messages: Map<bigint, MessageEntryRecord> = new Map();

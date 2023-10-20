@@ -3,13 +3,13 @@ import fs from 'fs';
 
 import * as v from 'valibot';
 
-import {__src_dir} from '~src/config';
+import {__project_dir} from '~src/config';
 import {User, UserRecord, UserSchema} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import serialize from '~src/libraries/parsers/converter';
 
 export class UserRepository {
-  private static readonly SAVE_FILENAME = path.join(__src_dir, 'data', 'user-repository.json');
+  private static readonly SAVE_FILENAME = path.join(__project_dir, 'data', 'user-repository.json');
 
   private users: Map<bigint, User> = new Map();
 
@@ -42,7 +42,7 @@ export class UserRepository {
   }
 
   public async createUser(userRecord: UserRecord): Promise<void> {
-    const user = new User(userRecord.id, userRecord.name, userRecord.email, userRecord.birthDate);
+    const user = User.fromRecord(userRecord);
     this.users.set(user.id, user);
   }
 
@@ -50,7 +50,7 @@ export class UserRepository {
     if (!this.users.has(userEntity.id)) {
       throw new NotFoundError(`User with id ${userEntity.id} does not exist`);
     }
-    const user = new User(userEntity.id, userEntity.name, userEntity.email, userEntity.birthDate);
+    const user = User.fromRecord(userEntity);
     this.users.set(user.id, user);
   }
 
@@ -76,7 +76,7 @@ export class UserRepository {
       return;
     }
     for (const user of users) {
-      this.users.set(user.id, new User(user.id, user.name, user.email, user.birthDate));
+      this.users.set(user.id, User.fromRecord(user));
     }
     console.log(`[UserRepository] Loaded users from ${UserRepository.SAVE_FILENAME}`);
   }
