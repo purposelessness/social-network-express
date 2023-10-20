@@ -3,13 +3,13 @@ import fs from 'fs';
 
 import * as v from 'valibot';
 
-import {__project_dir} from '~src/config';
+import {__data_dir} from '~src/config';
 import {Entry, EntrySchema, Request} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import {checkMessageExistence, checkUserExistence} from '~src/libraries/checkers';
 
 export class UserToMessageRepository {
-  private static readonly SAVE_FILENAME = path.join(__project_dir, 'data', 'user-to-message-repository.json');
+  private static readonly SAVE_FILENAME = path.join(__data_dir, 'user-to-message-repository.json');
 
   private readonly entries: Map<bigint, Set<bigint>> = new Map();
 

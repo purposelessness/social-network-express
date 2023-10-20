@@ -3,13 +3,13 @@ import fs from 'fs';
 
 import * as v from 'valibot';
 
-import {__project_dir} from '~src/config';
+import {__data_dir} from '~src/config';
 import {User, UserRecord, UserSchema} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import serialize from '~src/libraries/parsers/converter';
 
 export class UserRepository {
-  private static readonly SAVE_FILENAME = path.join(__project_dir, 'data', 'user-repository.json');
+  private static readonly SAVE_FILENAME = path.join(__data_dir, 'user-repository.json');
 
   private users: Map<bigint, User> = new Map();
 

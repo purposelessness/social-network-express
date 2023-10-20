@@ -5,16 +5,16 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 
-import {__project_dir, __tvm_key, __url} from '~src/config';
+import {__data_dir, __tvm_key, __url} from '~src/config';
 import {LoginRequest, RegisterRequest, Role} from './entities';
 import {ClientError, NotFoundError, ServerError} from '~src/types/errors';
 import {BaseUserRecord, UserRecord} from '~services/user-repository/entities';
 import serialize from '~src/libraries/parsers/converter';
 
 export class AuthProxyService {
-  private static readonly AUTH_FILENAME = path.join(__project_dir, 'data', 'auth.json');
-  private static readonly UIDS_FILENAME = path.join(__project_dir, 'data', 'uids.json');
-  private static readonly ROLES_FILENAME = path.join(__project_dir, 'data', 'roles.json');
+  private static readonly AUTH_FILENAME = path.join(__data_dir, 'auth.json');
+  private static readonly UIDS_FILENAME = path.join(__data_dir, 'uids.json');
+  private static readonly ROLES_FILENAME = path.join(__data_dir, 'roles.json');
 
   private static readonly SALT_ROUNDS = 10;
   private static readonly SECRET_KEY = 'secret';
