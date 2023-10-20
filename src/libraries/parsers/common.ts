@@ -18,12 +18,27 @@ export function parseInteger(name: string, obj: unknown): bigint {
   return v.parse(IntegerSchema(name), obj);
 }
 
-export function parseIntegerArray(name: string, obj: unknown): bigint[] {
+export function parseIntegerArraySafe(name: string, obj: unknown): bigint[] | undefined {
   const arrayRegex = /^(\d+\s*,?\s*)+$/;
   if (typeof obj === 'string' && arrayRegex.test(obj)) {
     obj = obj.split(',').map((str) => str.trim());
   }
-  return v.parse(v.array(IntegerSchema(name), `${name} is not an array`), obj);
+  const schema = v.array(IntegerSchema(name), `${name} is not an array`);
+  const res = v.safeParse(schema, obj);
+  if (res.success) {
+    return res.output;
+  }
+  console.warn(`[parseIntegerArraySafe] ${name}: ${res.issues}`);
+  return undefined;
+}
+
+export function parseIntegerArray(name: string, obj: unknown, force = true): bigint[] {
+  const arrayRegex = /^(\d+\s*,?\s*)+$/;
+  if (typeof obj === 'string' && arrayRegex.test(obj)) {
+    obj = obj.split(',').map((str) => str.trim());
+  }
+  const schema = v.array(IntegerSchema(name), `${name} is not an array`);
+  return v.parse(schema, obj);
 }
 
 export function EmailSchema(name: string) {

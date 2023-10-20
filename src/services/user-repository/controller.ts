@@ -1,7 +1,7 @@
 import express from 'express';
 import * as v from 'valibot';
 
-import {parseInteger} from '~src/libraries/parsers/common';
+import {parseInteger, parseIntegerArraySafe} from '~src/libraries/parsers/common';
 import {UserSchema} from './entities';
 import {UserRepository} from './service';
 import serialize from '~src/libraries/parsers/converter';
@@ -49,7 +49,9 @@ export class UserRepositoryController {
   };
 
   public getUsers = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const users = await this.repository.getUsers();
+    const idsStr = req.query['ids'];
+    const ids = parseIntegerArraySafe('ids', idsStr);
+    const users = await this.repository.getUsers(ids);
     let json = users.map(user => serialize(user));
     res.status(200).json(json);
   };

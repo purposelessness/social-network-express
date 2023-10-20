@@ -7,9 +7,9 @@ setNav();
 class User {
   constructor(
       public readonly id: bigint,
-      public name: string,
-      public email: string,
-      public birthDate: string,
+      public readonly name: string,
+      public readonly email: string,
+      public readonly birthDate: string,
   ) {
   }
 }

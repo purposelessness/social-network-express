@@ -17,8 +17,18 @@ export class UserRepository {
     this.load();
   }
 
-  public async getUsers(): Promise<User[]> {
-    return [...this.users.values()];
+  public async getUsers(ids?: bigint[]): Promise<User[]> {
+    if (ids === undefined) {
+      return [...this.users.values()];
+    } else {
+      const result = [];
+      for (const id of ids) {
+        if (this.users.has(id)) {
+          result.push(this.users.get(id)!);
+        }
+      }
+      return result;
+    }
   }
 
   public async getUserById(id: bigint): Promise<User> {
