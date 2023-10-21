@@ -28,7 +28,7 @@ export function parseIntegerArraySafe(name: string, obj: unknown): bigint[] | un
   if (res.success) {
     return res.output;
   }
-  console.warn(`[parseIntegerArraySafe] ${name}: ${res.issues}`);
+  console.warn(`[parseIntegerArraySafe] ${name}: ${JSON.stringify(res.issues)}`);
   return undefined;
 }
 

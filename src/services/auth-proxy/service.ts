@@ -4,17 +4,28 @@ import express from 'express';
 
 import bcrypt from 'bcrypt';
 import jwt, {JwtPayload} from 'jsonwebtoken';
+import * as v from 'valibot';
 
 import {__data_dir, __tvm_key, __url} from '~src/config';
-import {LoginRequest, RegisterRequest, Role} from './entities';
+import {
+  LoginRequest,
+  RegisterRequest,
+  Role,
+  Status,
+  UpdateInfoRequest,
+  UserInfo,
+  UserInfoEntry,
+  UserInfoEntrySchema,
+} from './entities';
 import {ClientError, NotFoundError, ServerError} from '~src/types/errors';
 import {BaseUserRecord, UserRecord} from '~services/user-repository/entities';
 import serialize from '~src/libraries/parsers/converter';
+import fs from 'fs';
 
 export class AuthProxyService {
   private static readonly AUTH_FILENAME = path.join(__data_dir, 'auth.json');
   private static readonly UIDS_FILENAME = path.join(__data_dir, 'uids.json');
-  private static readonly ROLES_FILENAME = path.join(__data_dir, 'roles.json');
+  private static readonly USER_INFOS_FILENAME = path.join(__data_dir, 'user-infos.json');
 
   private static readonly SALT_ROUNDS = 10;
   private static readonly SECRET_KEY = 'secret';
@@ -24,7 +35,11 @@ export class AuthProxyService {
 
   private readonly authData: Map<string, string> = new Map();
   private readonly uids: Map<string, bigint> = new Map();
-  private readonly roles: Map<bigint, Role> = new Map();
+  private readonly infos: Map<bigint, UserInfo> = new Map();
+
+  constructor() {
+    this.loadUserInfosData();
+  }
 
   public login = async (request: LoginRequest): Promise<string> => {
     if (!this.authData.has(request.login)) {
@@ -37,8 +52,8 @@ export class AuthProxyService {
     }
 
     const payload = {
-      uid: this.uids.get(request.login)?.toString(),
-      role: this.roles.get(this.uids.get(request.login)!),
+      uid: this.uids.get(request.login)!.toString(),
+      info: this.infos.get(this.uids.get(request.login)!)!,
     };
     return jwt.sign(payload, AuthProxyService.SECRET_KEY, {
       expiresIn: AuthProxyService.TOKEN_EXPIRATION_TIME,
@@ -57,9 +72,15 @@ export class AuthProxyService {
     this.uids.set(request.login, uid);
 
     if (request.secret === AuthProxyService.SECRET_KEY) {
-      this.roles.set(uid, Role.ADMIN);
+      this.infos.set(uid, {
+        role: Role.ADMIN,
+        status: Status.ACTIVE,
+      });
     } else {
-      this.roles.set(uid, Role.USER);
+      this.infos.set(uid, {
+        role: Role.USER,
+        status: Status.UNAUTHENTICATED,
+      });
     }
 
     await this.createUser(uid, {
@@ -89,7 +110,7 @@ export class AuthProxyService {
         }
         const payload = decoded as JwtPayload;
         console.log(payload);
-        console.log(this.roles);
+        console.log(this.infos);
         if (!this.isTokenValid(payload)) {
           console.warn(`[AuthProxyService] Token is not valid`);
           throw new ClientError('User is not authorized', 401);
@@ -101,11 +122,35 @@ export class AuthProxyService {
     }
   };
 
-  public permit = async (uid: bigint | undefined, requestedRole: Role) => {
-    if (uid == null) {
-      throw new ClientError('User is not found', 404);
+  public getInfo = async (uid: bigint): Promise<UserInfo> => {
+    if (!this.infos.has(uid)) {
+      throw new NotFoundError('User is not found');
     }
-    if (!this.roles.has(uid) || this.roles.get(uid) != requestedRole) {
+    return this.infos.get(uid)!;
+  };
+
+  public updateInfo = async (request: UpdateInfoRequest): Promise<void> => {
+    const uid = request.uid;
+    if (!this.infos.has(uid)) {
+      throw new NotFoundError('User is not found');
+    }
+
+    this.infos.set(uid, {
+      role: request.role,
+      status: request.status,
+    });
+    console.info(`[AuthProxyService] Updated info for user with id ${uid}: ${JSON.stringify(serialize(this.infos.get(uid)))}`);
+  };
+
+  public permit = async (uid: bigint | undefined, requestedRole: Role, requestedStatus: Status) => {
+    if (uid == null) {
+      throw new NotFoundError('User is not found');
+    }
+    if (!this.infos.has(uid)) {
+      throw new NotFoundError('User is not found');
+    }
+    const info = this.infos.get(uid)!;
+    if (info.role != requestedRole || info.status != requestedStatus) {
       throw new ClientError('You don\'t have enough permissions', 403);
     }
   };
@@ -134,7 +179,32 @@ export class AuthProxyService {
     if (!jwtPayload['uid'] || !jwtPayload['role']) {
       return false;
     }
+
     const uid = BigInt(jwtPayload['uid']);
-    return this.roles.get(uid) === jwtPayload['role'];
+    if (!this.infos.has(uid)) {
+      throw new NotFoundError('User is not found');
+    }
+
+    const info = this.infos.get(uid)!;
+    return info.role === jwtPayload['role'] && info.status === jwtPayload['status'];
+  }
+
+  private loadUserInfosData() {
+    if (!fs.existsSync(AuthProxyService.USER_INFOS_FILENAME)) {
+      console.log(`[AuthProxyService] File ${AuthProxyService.USER_INFOS_FILENAME} does not exist`);
+      return;
+    }
+    let data = fs.readFileSync(AuthProxyService.USER_INFOS_FILENAME, 'utf8');
+    let entries: UserInfoEntry[];
+    try {
+      entries = v.parse(v.array(UserInfoEntrySchema), JSON.parse(data));
+    } catch (e) {
+      console.warn(`[AuthProxyService] Failed to parse user-infos data ${e}}`);
+      return;
+    }
+    for (const entry of entries) {
+      this.infos.set(entry.uid, {role: entry.role, status: entry.status});
+    }
+    console.log(`[AuthProxyService] Loaded user-infos data from ${AuthProxyService.USER_INFOS_FILENAME}`);
   }
 }

@@ -2,7 +2,7 @@ import {Router} from 'express';
 
 import {safeCall} from '~src/libraries/utilities';
 import {AuthProxyController} from './controller';
-import {Role} from '~services/auth-proxy/entities';
+import {Role, Status} from './entities';
 
 export class AuthProxyRouter {
   constructor(private readonly controller: AuthProxyController) {
@@ -13,6 +13,8 @@ export class AuthProxyRouter {
 
     router.post('/login', safeCall(this.controller.login));
     router.post('/register', safeCall(this.controller.register));
+    router.get('/get-info/:uid(\\d+)', safeCall(this.controller.getInfo));
+    router.put('/update-info', safeCall(this.controller.updateInfo));
 
     return router;
   }
@@ -23,9 +25,9 @@ export class AuthProxyRouter {
     return router;
   }
 
-  public permit(requiredRole: Role) {
+  public permit(requiredRole: Role, requiredStatus: Status) {
     const router = Router();
-    const permitFunc = this.controller.permit(requiredRole);
+    const permitFunc = this.controller.permit(requiredRole, requiredStatus);
     router.use(safeCall(permitFunc));
     return router;
   };

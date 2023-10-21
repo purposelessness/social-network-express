@@ -1,7 +1,8 @@
 import * as v from 'valibot';
 import {USER_SCHEMA} from '~services/user-repository/entities';
+import {IntegerSchema} from '~src/libraries/parsers/common';
 
-export const LoginRequestScheme = v.object({
+export const LoginRequestSchema = v.object({
   login: v.string('login must be a string',
       [v.minLength(5, 'login must be at least 5 characters long'),
         v.maxLength(32, 'login must be at most 32 characters long')]),
@@ -10,9 +11,9 @@ export const LoginRequestScheme = v.object({
         v.maxLength(32, 'password must be at most 32 characters long')]),
 });
 
-export type LoginRequest = v.Output<typeof LoginRequestScheme>;
+export type LoginRequest = v.Output<typeof LoginRequestSchema>;
 
-export const RegisterRequestScheme = v.object({
+export const RegisterRequestSchema = v.object({
   login: v.string('login must be a string',
       [v.minLength(5, 'login must be at least 5 characters long'),
         v.maxLength(32, 'login must be at most 32 characters long')]),
@@ -23,9 +24,35 @@ export const RegisterRequestScheme = v.object({
   ...USER_SCHEMA,
 });
 
-export type RegisterRequest = v.Output<typeof RegisterRequestScheme>;
+export type RegisterRequest = v.Output<typeof RegisterRequestSchema>;
 
 export enum Role {
   USER = 'user',
   ADMIN = 'admin',
 }
+
+export enum Status {
+  UNAUTHENTICATED = 'unauthenticated',
+  ACTIVE = 'active',
+  BANNED = 'banned',
+}
+
+export const USER_INFO = {
+  role: v.nativeEnum(Role, 'role must be a valid Role'),
+  status: v.nativeEnum(Status, 'status must be a valid Status'),
+};
+
+export const UserInfoSchema = v.object(USER_INFO);
+
+export type UserInfo = v.Output<typeof UserInfoSchema>;
+
+export const UpdateInfoRequestSchema = v.object({
+  uid: IntegerSchema('uid'),
+  ...USER_INFO,
+});
+
+export type UpdateInfoRequest = v.Output<typeof UpdateInfoRequestSchema>;
+
+export const UserInfoEntrySchema = UpdateInfoRequestSchema;
+
+export type UserInfoEntry = v.Output<typeof UpdateInfoRequestSchema>;

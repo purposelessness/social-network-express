@@ -23,7 +23,7 @@ server.set('views', path.join(__front_src_dir, 'views'));
 server.use(sassMiddleware({
   src: __front_src_dir,
   dest: __public_dir,
-  debug: true,
+  debug: false,
   outputStyle: 'compressed',
 }));
 // process public files
