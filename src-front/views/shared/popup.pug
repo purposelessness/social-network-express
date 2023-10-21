@@ -1,10 +1,44 @@
-mixin popup(id)
+mixin modal(id)
   div.modal.fade(tabindex='-1', aria-hidden='true', id=id)
     div.modal-dialog
       div.modal-content
-        div.modal-header
-          button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
-        div.modal-body
-          img.img-fluid(src='https://picsum.photos/300/300', alt='Image')
-        div.modal-footer
-          button.btn.btn-secondary(data-bs-dismiss='modal') Close
+        block
+
+mixin userImageModal()
+  div.modal-header
+    button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+  div.modal-body
+    img.img-fluid(src='https://picsum.photos/300/300', alt='Image')
+  div.modal-footer
+    button.btn.btn-secondary(data-bs-dismiss='modal') Close
+
+mixin userInfoModal()
+  div.modal-header
+    div#userInfoUidHolder
+    button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+  div.modal-body
+
+    div.mb-3
+      h3 User role
+      div.btn-group(role='group', aria-label='User role')
+        input.btn-check#userRole(type='radio', name='user-role-btnradio', autocomplete='off')
+        label.btn.btn-outline-primary(for='userRole') User
+
+        input.btn-check#adminRole(type='radio', name='user-role-btnradio', autocomplete='off')
+        label.btn.btn-outline-primary(for='adminRole') Admin
+
+    div.mt-3
+      h3 User status
+      div.btn-group(role='group', aria-label='User status')
+        input.btn-check#unauthenticatedStatus(type='radio', name='user-status-btnradio', autocomplete='off')
+        label.btn.btn-outline-primary(for='unauthenticatedStatus') Unauthenticated
+
+        input.btn-check#activeStatus(type='radio', name='user-status-btnradio', autocomplete='off')
+        label.btn.btn-outline-primary(for='activeStatus') Active
+
+        input.btn-check#bannedStatus(type='radio', name='user-status-btnradio', autocomplete='off')
+        label.btn.btn-outline-primary(for='bannedStatus') Banned
+
+  div.modal-footer
+    button.btn.btn-primary#updateUserInfoButton Update
+    button.btn.btn-secondary#closeUserInfoButton(data-bs-dismiss='modal') Close

@@ -12,10 +12,15 @@ block content
         th(scope='col') Name
         th(scope='col') E-mail
         th(scope='col') Birthday
+        th(scope='col') Status
     tbody
 
 block outer
-  +popup('showImageModal')
+  +modal('showImageModal')
+    +userImageModal()
+  +modal('showUserInfoModal')
+    +userInfoModal()
+
 
 block scripts
   script(src='/scripts/user/index.js')
