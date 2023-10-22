@@ -1,7 +1,6 @@
 const path = require('path');
 
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
 
 function resolveFilename(fileData) {
   switch (fileData.contentHashType) {
@@ -35,6 +34,7 @@ module.exports = {
     ],
   },
   resolve: {extensions: ['.ts', '.tsx', '.js']},
+  optimization: {minimize: true},
 };
 
 // const PugPlugin = require('pug-plugin');
