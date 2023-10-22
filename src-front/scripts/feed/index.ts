@@ -3,6 +3,7 @@ import $ from 'jquery';
 import setNav from '../shared/nav';
 
 import serialize from '../shared/converter';
+import {getFromUrl} from '../shared/utilities';
 
 setNav();
 
@@ -69,5 +70,5 @@ async function fillUserTable(uid: string) {
   });
 }
 
-const uid = $('#feedTable').attr('data-uid')!;
+const uid = getFromUrl();
 const promise = fillUserTable(uid);
