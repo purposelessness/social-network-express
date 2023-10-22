@@ -3,7 +3,9 @@
   "type": "module",
   "scripts": {
     "build": "rimraf ./build && npx tsc && npx tsc-alias",
-    "build-webpack": "rimraf ./public/scripts ./public/styles && cross-env NODE_ENV=development DIRNAME='public' npx webpack",
+    "build-webpack": "rimraf ./public/scripts && cross-env NODE_ENV=development DIRNAME='public' npx webpack",
+    "build-gulp": "rimraf ./dist && cross-env NODE_ENV=development DIRNAME='dist' npx gulp",
+    "build-gulp-public": "rimraf ./public/scripts && cross-env NODE_ENV=development DIRNAME='public' npx gulp",
     "start": "npm run build && npm run build-webpack && node build/server",
     "fast-start": "npm run build && node build/server"
   },
@@ -15,22 +17,34 @@
   "devDependencies": {
     "@babel/preset-env": "^7.22.20",
     "@types/bcrypt": "^5.0.0",
+    "@types/bootstrap": "^5.2.8",
     "@types/compression": "^1.7.3",
     "@types/cookie-parser": "^1.4.4",
     "@types/express": "^4.17.18",
+    "@types/gulp": "^4.0.16",
     "@types/jquery": "^3.5.20",
     "@types/jsonwebtoken": "^9.0.3",
     "@types/morgan": "^1.9.6",
     "@types/node": "^20.7.1",
     "@types/node-sass-middleware": "^0.0.34",
     "babel-loader": "^9.1.3",
+    "babelify": "^10.0.0",
     "bcrypt": "^5.1.1",
+    "bootstrap": "^5.3.2",
+    "browserify": "^17.0.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
     "express": "^4.18.2",
+    "glob": "^10.3.10",
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-cli": "^2.3.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "gulp-uglify": "^3.0.2",
     "husky": "^8.0.3",
+    "jquery": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "node-sass-middleware": "^1.1.0",
@@ -45,6 +59,8 @@
     "tsc-alias": "^1.8.8",
     "typescript": "^5.2.2",
     "valibot": "^0.18.0",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
@@ -53,10 +69,5 @@
   "author": "",
   "version": "1.0.0",
   "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "@types/bootstrap": "^5.2.8",
-    "bootstrap": "^5.3.2",
-    "jquery": "^3.7.1"
-  }
+  "description": ""
 }
