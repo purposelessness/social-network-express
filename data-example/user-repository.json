@@ -1,0 +1,26 @@
+[
+  {
+    "id": "0",
+    "name": "Michael Yagodarov",
+    "email": "purposelessness@ya.ru",
+    "birthDate": "2003-10-13"
+  },
+  {
+    "id": "1",
+    "name": "John Brown",
+    "email": "johnbrown@rambler.com",
+    "birthDate": "1991-01-01"
+  },
+  {
+    "id": "2",
+    "name": "Vasya Zolotarev",
+    "email": "vasya01@gmail.com",
+    "birthDate": "2006-07-29"
+  },
+  {
+    "id": "3",
+    "name": "Jane Doe",
+    "email": "undefined@example.com",
+    "birthDate": "2003-02-17"
+  }
+]

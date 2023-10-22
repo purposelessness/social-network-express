@@ -1,0 +1,32 @@
+[
+  {
+    "id": "0",
+    "uid": "0",
+    "text": "Initial message. (@admin)",
+    "createdAt": "2023-10-21T23:35:32"
+  },
+  {
+    "id": "1",
+    "uid": "0",
+    "text": "Testing functionality...",
+    "createdAt": "2023-10-21T23:59:02"
+  },
+  {
+    "id": "2",
+    "uid": "2",
+    "text": "Hi! Is anybody here?",
+    "createdAt": "2023-10-22T01:18:30"
+  },
+  {
+    "id": "3",
+    "uid": "1",
+    "text": "...",
+    "createdAt": "2023-10-22T09:40:21"
+  },
+  {
+    "id": "4",
+    "uid": "2",
+    "text": "What's wrong? Hmm...",
+    "createdAt": "2023-10-22T09:40:21"
+  }
+]

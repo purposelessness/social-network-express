@@ -1,0 +1,22 @@
+[
+  {
+    "uid": "0",
+    "role": "admin",
+    "status": "active"
+  },
+  {
+    "uid": "1",
+    "role": "user",
+    "status": "active"
+  },
+  {
+    "uid": "2",
+    "role": "user",
+    "status": "active"
+  },
+  {
+    "uid": "3",
+    "role": "user",
+    "status": "unauthenticated"
+  }
+]
