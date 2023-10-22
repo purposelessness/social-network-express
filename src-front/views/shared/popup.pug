@@ -14,7 +14,6 @@ mixin userImageModal()
 
 mixin userInfoModal()
   div.modal-header
-    div#userInfoUidHolder
     button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
   div.modal-body
 
@@ -42,3 +41,12 @@ mixin userInfoModal()
   div.modal-footer
     button.btn.btn-primary#updateUserInfoButton Update
     button.btn.btn-secondary#closeUserInfoButton(data-bs-dismiss='modal') Close
+
+mixin userPageSelectorModal()
+  div.modal-header
+    button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+  div.modal-body
+    a.btn.btn-primary#gotoFriendsPageButton(href='/friends', role='button') Friends
+    a.btn.btn-primary#gotoFeedPageButton(href='/feed', role='button') Feed
+  div.modal-footer
+    button.btn.btn-secondary(data-bs-dismiss='modal') Close

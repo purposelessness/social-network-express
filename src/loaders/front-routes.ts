@@ -18,11 +18,17 @@ export default (server: express.Express) => {
     });
   });
 
+  server.use('/friends/:id(\\d+)', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.status(200);
+    res.render('user/friends', {
+      pageId: 'friends',
+    });
+  });
+
   server.use('/feed/:id(\\d+)', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.status(200);
     res.render('feed/index', {
       pageId: 'feed',
-      uid: req.params['id'],
     });
   });
 

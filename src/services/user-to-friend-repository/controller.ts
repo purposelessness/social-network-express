@@ -16,6 +16,10 @@ export class UserToFriendRepositoryController {
 
   public getEntryById = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const id = parseInteger('id', req.params['id']);
+    const entry = await this.repository.getEntryById(id);
+    console.log('Entry: ', entry);
+    const response = serialize(await this.repository.getEntryById(id));
+    console.log('Response: ', response);
     res.status(200).json(serialize(await this.repository.getEntryById(id)));
   };
 

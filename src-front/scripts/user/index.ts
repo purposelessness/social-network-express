@@ -1,6 +1,8 @@
 import $ from 'jquery';
 
 import setNav from '../shared/nav';
+import {getFromCookie} from '../shared/utilities';
+import {createShowUserPageSelectorLink} from '../../views/user/shared';
 
 setNav();
 
@@ -71,7 +73,7 @@ function createShowStatusButton(uid: bigint, userInfo: UserInfo) {
 
   button.on('click', () => {
     const modal = $('#showUserInfoModal');
-    modal.find('#userInfoUidHolder').attr('data-uid', uid.toString());
+    document.cookie = `uid=${uid.toString()}`;
     modal.find(`#${userInfo.role}Role`).attr('checked', '');
     modal.find(`#${userInfo.status}Status`).attr('checked', '');
   });
@@ -92,8 +94,7 @@ function fillUserTableImpl(users: User[]): void {
     const tr = $('<tr>');
     tr.append($('<td>').text(user.id.toString()));
     tr.append($('<td>').append(createShowImageButton(`/img/user/${user.id}.jpg`)));
-    const nameA = $('<a>').attr('href', `/feed/${user.id.toString()}`).text(user.name);
-    tr.append($('<td>').append(nameA));
+    tr.append($('<td>').append(createShowUserPageSelectorLink(user.id, user.name)));
     tr.append($('<td>').text(user.email));
     tr.append($('<td>').text(user.birthDate));
 
@@ -118,8 +119,8 @@ async function fillUserTable() {
 
 const onStatusModalUpdate = () => {
   const modal = $('#showUserInfoModal');
-  const uid = modal.find('#userInfoUidHolder').attr('data-uid');
-  if (uid === undefined) {
+  const uid = getFromCookie('uid');
+  if (uid == null) {
     console.warn('uid is undefined');
   } else {
     const roleRaw = modal.find('input[name="user-role-btnradio"]:checked').attr('id');

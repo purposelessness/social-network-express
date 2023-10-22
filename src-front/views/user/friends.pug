@@ -4,25 +4,17 @@ include ../shared/popup
 
 block content
 
-  table.table.table-hover#usersTable
+  table.table.table-hover#friendsTable(data-uid=uid)
     thead
       tr
         th(scope='col') Id
-        th(scope='col') Image
         th(scope='col') Name
-        th(scope='col') E-mail
         th(scope='col') Birthday
-        th(scope='col') Status
     tbody
 
 block outer
-  +modal('showImageModal')
-    +userImageModal()
-  +modal('showUserInfoModal')
-    +userInfoModal()
   +modal('showUserPageSelectorModal')
     +userPageSelectorModal()
 
-
 block scripts
-  script(src='/scripts/user/index.js')
+  script(src='/scripts/user/friends.js')
