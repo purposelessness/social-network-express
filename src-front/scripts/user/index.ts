@@ -2,7 +2,7 @@ import $ from 'jquery';
 
 import setNav from '../shared/nav';
 import {getFromCookie} from '../shared/utilities';
-import {createShowUserPageSelectorLink} from '../../views/user/shared';
+import {createShowUserPageSelectorLink} from './shared';
 
 setNav();
 
@@ -151,7 +151,6 @@ const onStatusModalUpdate = () => {
 };
 
 const modal = $('#showUserInfoModal');
-console.log(modal);
 modal.find('#updateUserInfoButton').on('click', onStatusModalUpdate);
 
 const modalElement = modal[0];

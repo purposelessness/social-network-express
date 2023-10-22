@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 export function createShowUserPageSelectorLink(uid: bigint, name: string) {
   const link = $('<a>').attr('href', '#').text(name);
   link.attr('data-bs-toggle', 'modal');
@@ -15,4 +13,3 @@ export function createShowUserPageSelectorLink(uid: bigint, name: string) {
 
   return link;
 }
-

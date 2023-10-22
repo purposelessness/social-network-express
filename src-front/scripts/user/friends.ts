@@ -4,7 +4,7 @@ import setNav from '../shared/nav';
 
 import serialize from '../shared/converter';
 import {getFromUrl} from '../shared/utilities';
-import {createShowUserPageSelectorLink} from '../../views/user/shared';
+import {createShowUserPageSelectorLink} from './shared';
 
 setNav();
 
