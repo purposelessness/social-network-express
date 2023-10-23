@@ -65,7 +65,7 @@
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
   },
-  "name": "social-network",
+  "name": "@purposelessness/social-network",
   "author": "",
   "version": "1.0.0",
   "license": "ISC",
