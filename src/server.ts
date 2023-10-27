@@ -8,6 +8,7 @@ import sassMiddleware from 'node-sass-middleware';
 
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import morgan from 'morgan';
 
 import {__front_src_dir, __project_dir, __public_dir} from '~src/config';
@@ -29,6 +30,11 @@ server.use(sassMiddleware({
 // process public files
 server.use(express.static(__public_dir));
 
+// enable cors
+server.use(cors({
+  origin: 'http://localhost:4200',
+  credentials: true,
+}));
 // compress all responses with gzip
 server.use(compression());
 // print request logs
