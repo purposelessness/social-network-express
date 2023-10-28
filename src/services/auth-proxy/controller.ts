@@ -38,6 +38,11 @@ export class AuthProxyController {
     res.status(200).send();
   };
 
+  public getSelfInfo = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.status(200).json(serialize(await this.service.getSelfInfo(req)));
+  };
+
+
   public getInfo = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const uid = parseInteger('uid', req.params['uid']);
     res.status(200).json(serialize(await this.service.getInfo(uid)));

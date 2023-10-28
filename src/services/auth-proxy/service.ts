@@ -109,8 +109,6 @@ export class AuthProxyService {
           throw new ClientError('User is not authorized', 401);
         }
         const payload = decoded as JwtPayload;
-        console.log(payload);
-        console.log(this.infos);
         if (!this.isTokenValid(payload)) {
           console.warn(`[AuthProxyService] Token is not valid`);
           throw new ClientError('User is not authorized', 401);
@@ -122,6 +120,10 @@ export class AuthProxyService {
         };
       });
     }
+  };
+
+  public getSelfInfo = async (req: express.Request): Promise<UserInfo> => {
+    return req.body.authContext;
   };
 
   public getInfo = async (uid: bigint): Promise<UserInfo> => {
