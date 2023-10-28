@@ -14,18 +14,18 @@ export async function checkUserExistence(uid: bigint): Promise<void> {
   }
 }
 
-export async function checkMessageExistence(id: bigint): Promise<void> {
-  const response = await fetch(`${__url}/api/message-repository/exists/${id}`, {
+export async function checkNewsExistence(id: bigint): Promise<void> {
+  const response = await fetch(`${__url}/api/news-repository/exists/${id}`, {
     method: 'GET',
     headers: {
       Authorization: __tvm_key,
     },
   });
   if (!response.ok) {
-    throw new ServerError(`Failed to check if message with id ${id} exists`);
+    throw new ServerError(`Failed to check if news with id ${id} exists`);
   }
   const exists = await response.json();
   if (!exists) {
-    throw new NotFoundError(`Message with id ${id} does not exist in message-repository`);
+    throw new NotFoundError(`News with id ${id} does not exist in news-repository`);
   }
 }

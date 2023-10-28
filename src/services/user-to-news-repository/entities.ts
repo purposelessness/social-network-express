@@ -4,12 +4,12 @@ import {IntegerSchema} from '~src/libraries/parsers/common';
 
 export const EntrySchema = v.object({
   uid: IntegerSchema('uid'),
-  ids: v.array(IntegerSchema('messageId')),
+  ids: v.array(IntegerSchema('newsId')),
 });
 
 export const RequestSchema = v.object({
   uid: IntegerSchema('uid'),
-  messageId: IntegerSchema('messageId'),
+  newsId: IntegerSchema('newsId'),
 });
 
 export type Entry = v.Output<typeof EntrySchema>;

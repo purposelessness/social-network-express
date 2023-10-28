@@ -1,5 +1,6 @@
 import $ from 'jquery';
 
+import {__tvm_key} from '../config';
 import setNav from '../shared/nav';
 import {getFromCookie} from '../shared/utilities';
 import {createShowUserPageSelectorLink} from './shared';
@@ -47,6 +48,9 @@ function createShowImageButton(imagePath: string): JQuery<HTMLElement> {
   $.ajax({
     url: imagePath,
     method: 'HEAD',
+    headers: {
+      authorization: __tvm_key,
+    },
     success: () => {
       button.attr('data-image-path', imagePath);
     },
@@ -89,6 +93,9 @@ function fillUserTableImpl(users: User[]): void {
     const getUserInfoPromise = $.ajax({
       url: `/api/get-info/${user.id.toString()}`,
       method: 'GET',
+      headers: {
+        authorization: __tvm_key,
+      },
     });
 
     const tr = $('<tr>');
@@ -111,6 +118,9 @@ async function fillUserTable() {
   return $.ajax({
     url: '/api/user-repository',
     method: 'GET',
+    headers: {
+      authorization: __tvm_key,
+    },
     success: (users) => {
       fillUserTableImpl(users);
     },
@@ -135,6 +145,9 @@ const onStatusModalUpdate = () => {
     $.ajax({
       url: `/api/update-info`,
       method: 'PUT',
+      headers: {
+        authorization: __tvm_key,
+      },
       data: {
         uid,
         role,

@@ -3,11 +3,11 @@ import * as v from 'valibot';
 
 import {parseInteger} from '~src/libraries/parsers/common';
 import {RequestSchema} from './entities';
-import {UserToMessageRepository} from './service';
+import {UserToNewsRepository} from './service';
 import serialize from '~src/libraries/parsers/converter';
 
-export class UserToMessageRepositoryController {
-  constructor(private readonly repository: UserToMessageRepository) {
+export class UserToNewsRepositoryController {
+  constructor(private readonly repository: UserToNewsRepository) {
   }
 
   public getEntries = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -19,15 +19,15 @@ export class UserToMessageRepositoryController {
     res.status(200).json(serialize(await this.repository.getEntryById(id)));
   };
 
-  public addMessage = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  public addLink = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const request = v.parse(RequestSchema, req.body);
-    await this.repository.addMessage(request);
+    await this.repository.addLink(request);
     res.status(200).send();
   };
 
-  public deleteMessage = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  public deleteLink = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const request = v.parse(RequestSchema, req.body);
-    await this.repository.deleteMessage(request);
+    await this.repository.deleteLink(request);
     res.status(200).send();
   };
 

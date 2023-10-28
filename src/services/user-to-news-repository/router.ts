@@ -1,10 +1,10 @@
 import {Router} from 'express';
 
 import {safeCall} from '~src/libraries/utilities';
-import {UserToMessageRepositoryController} from './controller';
+import {UserToNewsRepositoryController} from './controller';
 
-export class UserToMessageRepositoryRouter {
-  constructor(private readonly controller: UserToMessageRepositoryController) {
+export class UserToNewsRepositoryRouter {
+  constructor(private readonly controller: UserToNewsRepositoryController) {
   }
 
   public getRouter() {
@@ -12,8 +12,8 @@ export class UserToMessageRepositoryRouter {
 
     router.get('/', safeCall(this.controller.getEntries));
     router.get('/:id(\\d+)', safeCall(this.controller.getEntryById));
-    router.post('/', safeCall(this.controller.addMessage));
-    router.delete('/', safeCall(this.controller.deleteMessage));
+    router.post('/', safeCall(this.controller.addLink));
+    router.delete('/', safeCall(this.controller.deleteLink));
     router.post('/save', safeCall(this.controller.save));
 
     return router;

@@ -5,6 +5,7 @@ import setNav from '../shared/nav';
 import serialize from '../shared/converter';
 import {getFromUrl} from '../shared/utilities';
 import {createShowUserPageSelectorLink} from './shared';
+import {__tvm_key} from '../config';
 
 setNav();
 
@@ -33,6 +34,9 @@ function fillFriendsTableImpl(friendIds: bigint[]): void {
   // Get information about friends
   $.ajax({
     url: `/api/user-repository/?ids=${serialize(friendIds)}`,
+    headers: {
+      authorization: __tvm_key,
+    },
     method: 'GET',
     success: (users: User[]) => {
       for (const user of users) {
@@ -55,6 +59,9 @@ async function fillFriendsTable(uid: string) {
   return $.ajax({
     url: `/api/user-to-friend-repository/${uid}`,
     method: 'GET',
+    headers: {
+      authorization: __tvm_key,
+    },
     success: (response: Response) => {
       fillFriendsTableImpl(response.ids);
     },
