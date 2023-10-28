@@ -30,26 +30,26 @@ export class NewsFeedService {
   }
 
   private async getNewsListIds(uids: bigint[]): Promise<bigint[]> {
-    const responses: Promise<Response>[] = [];
+    const responses: Promise<void>[] = [];
+    const newsListIds: bigint[] = [];
     for (const uid of uids) {
-      responses.push(fetch(`${__url}/api/user-to-news-repository/${uid}`, {
+      const promise = fetch(`${__url}/api/user-to-news-repository/${uid}`, {
         method: 'GET',
         headers: {
           Authorization: __tvm_key,
         },
-      }));
+      }).then(async (response) => {
+        const json = await response.json();
+        console.log(`[NewsFeedService] Got news list of user with id ${uid}: ${JSON.stringify(json)}`);
+        const entry = v.parse(UserToNewsEntrySchema, json);
+        newsListIds.push(...entry.ids);
+      }).catch((e) => {
+        console.warn(`[NewsFeedService] Error on getting news list of user with id ${uid}: ${e}`);
+      });
+      responses.push(promise);
     }
-    const newsListIds: bigint[] = [];
-    for (let i = 0; i < responses.length; ++i) {
-      let response = await responses[i];
-      if (!response.ok) {
-        console.warn(`[NewsFeedService] Error on getting news list of user with id ${uids[i]}: ${response.statusText}`);
-        throw new ServerError(`Failed to get news list of user with id ${uids[i]}`);
-      }
-      const json = await response.json();
-      const entry = v.parse(UserToNewsEntrySchema, json);
-      newsListIds.push(...entry.ids);
-    }
+    await Promise.all(responses);
+
     return newsListIds;
   }
 
