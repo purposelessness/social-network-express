@@ -13,7 +13,12 @@ export class AuthProxyController {
 
   public login = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const request = v.parse(LoginRequestSchema, req.body);
-    res.status(200).send(serialize(await this.service.login(request)));
+    const token = await this.service.login(request);
+    res.status(200).cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    }).send();
   };
 
   public register = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -23,9 +28,7 @@ export class AuthProxyController {
   };
 
   public auth = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (!(req.originalUrl === '/api/login' || req.originalUrl === '/api/register')) {
-      await this.service.auth(req);
-    }
+    await this.service.auth(req);
     next();
   };
 

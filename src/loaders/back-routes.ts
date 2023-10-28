@@ -10,13 +10,14 @@ import userToFriendRepository from '~services/user-to-friend-repository';
 import userToMessageRepository from '~services/user-to-message-repository';
 
 export default (server: express.Express) => {
-  server.use('/api', /*authProxy.router.auth(),*/ authProxy.router.getRouter());
+  server.use('/api', authProxy.router.getRouter());
 
-  server.use('/api/user-repository', userRepository.router.getRouter());
-  server.use('/api/message-repository', messageRepository.router.getRouter());
-  server.use('/api/user-to-friend-repository', userToFriendRepository.router.getRouter());
-  server.use('/api/user-to-message-repository', userToMessageRepository.router.getRouter());
-  server.use('/api/news-feed', newsFeedService.router.getRouter());
+  const auth = authProxy.router.auth();
+  server.use('/api/user-repository', auth, userRepository.router.getRouter());
+  server.use('/api/message-repository', auth, messageRepository.router.getRouter());
+  server.use('/api/user-to-friend-repository', auth, userToFriendRepository.router.getRouter());
+  server.use('/api/user-to-message-repository', auth, userToMessageRepository.router.getRouter());
+  server.use('/api/news-feed', auth, newsFeedService.router.getRouter());
 
   server.use('/api', errorHandler);
 };

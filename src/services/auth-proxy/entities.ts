@@ -38,6 +38,7 @@ export enum Status {
 }
 
 export const USER_INFO = {
+  uid: IntegerSchema('uid'),
   role: v.nativeEnum(Role, 'role must be a valid Role'),
   status: v.nativeEnum(Status, 'status must be a valid Status'),
 };
@@ -47,7 +48,6 @@ export const UserInfoSchema = v.object(USER_INFO);
 export type UserInfo = v.Output<typeof UserInfoSchema>;
 
 export const UpdateInfoRequestSchema = v.object({
-  uid: IntegerSchema('uid'),
   ...USER_INFO,
 });
 

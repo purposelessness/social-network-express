@@ -13,8 +13,9 @@ export class AuthProxyRouter {
 
     router.post('/login', safeCall(this.controller.login));
     router.post('/register', safeCall(this.controller.register));
-    router.get('/get-info/:uid(\\d+)', safeCall(this.controller.getInfo));
-    router.put('/update-info', safeCall(this.controller.updateInfo));
+
+    router.get('/get-info/:uid(\\d+)', safeCall(this.controller.auth), safeCall(this.controller.getInfo));
+    router.put('/update-info', safeCall(this.controller.auth), safeCall(this.controller.updateInfo));
 
     return router;
   }

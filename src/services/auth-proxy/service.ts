@@ -18,7 +18,7 @@ import {
   UserInfoEntrySchema,
 } from './entities';
 import {ClientError, NotFoundError, ServerError} from '~src/types/errors';
-import {BaseUserRecord, UserRecord} from '~services/user-repository/entities';
+import {BaseUserRecord} from '~services/user-repository/entities';
 import serialize from '~src/libraries/parsers/converter';
 import fs from 'fs';
 
@@ -30,8 +30,6 @@ export class AuthProxyService {
   private static readonly SALT_ROUNDS = 10;
   private static readonly SECRET_KEY = 'secret';
   private static readonly TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7; // 1 week
-
-  private static UNIQUE_ID = 0n;
 
   private readonly authData: Map<string, string> = new Map();
   private readonly uids: Map<string, bigint> = new Map();
@@ -51,10 +49,7 @@ export class AuthProxyService {
       throw new ClientError('Wrong password');
     }
 
-    const payload = {
-      uid: this.uids.get(request.login)!.toString(),
-      info: this.infos.get(this.uids.get(request.login)!)!,
-    };
+    const payload = serialize(this.infos.get(this.uids.get(request.login)!)!);
     return jwt.sign(payload, AuthProxyService.SECRET_KEY, {
       expiresIn: AuthProxyService.TOKEN_EXPIRATION_TIME,
     });
@@ -68,42 +63,47 @@ export class AuthProxyService {
     const hashedPassword = await bcrypt.hash(request.password, AuthProxyService.SALT_ROUNDS);
     this.authData.set(request.login, hashedPassword);
 
-    const uid = AuthProxyService.UNIQUE_ID++;
+    const uid = await this.createUser({
+      name: request.name,
+      email: request.email,
+      birthDate: request.birthDate,
+    });
+
     this.uids.set(request.login, uid);
 
     if (request.secret === AuthProxyService.SECRET_KEY) {
       this.infos.set(uid, {
+        uid: uid,
         role: Role.ADMIN,
         status: Status.ACTIVE,
       });
     } else {
       this.infos.set(uid, {
+        uid: uid,
         role: Role.USER,
         status: Status.UNAUTHENTICATED,
       });
     }
-
-    await this.createUser(uid, {
-      name: request.name,
-      email: request.email,
-      birthDate: request.birthDate,
-    });
   };
 
   public auth = async (request: express.Request): Promise<void> => {
-    let token = request.headers.authorization;
-    if (!token) {
-      console.warn('[AuthProxyService] Token is not provided');
-      throw new ClientError('User is not authorized', 401);
-    } else if (token === 'TVM-key') {
+    const authenticationToken = request.headers.authorization;
+    if (authenticationToken != null && authenticationToken == __tvm_key) {
       console.log('[AuthProxyService] TVM-key is provided');
       request.body.authContext = {
         uid: 0n,
         role: Role.ADMIN,
       };
+      return;
+    }
+
+    let cookieToken = request.cookies['token'];
+    if (!cookieToken) {
+      console.warn('[AuthProxyService] Token is not provided');
+      throw new ClientError('User is not authorized', 401);
     } else {
-      token = token.replace('Bearer ', '');
-      jwt.verify(token, AuthProxyService.SECRET_KEY, (err, decoded) => {
+      cookieToken = cookieToken.replace('Bearer ', '');
+      jwt.verify(cookieToken, AuthProxyService.SECRET_KEY, (err: any, decoded: any) => {
         if (err) {
           console.warn(`[AuthProxyService] Error on verifying token: ${err}`);
           throw new ClientError('User is not authorized', 401);
@@ -117,6 +117,8 @@ export class AuthProxyService {
         }
         request.body.authContext = {
           uid: payload['uid'],
+          role: payload['role'],
+          status: payload['status'],
         };
       });
     }
@@ -136,6 +138,7 @@ export class AuthProxyService {
     }
 
     this.infos.set(uid, {
+      uid: uid,
       role: request.role,
       status: request.status,
     });
@@ -155,24 +158,29 @@ export class AuthProxyService {
     }
   };
 
-  private async createUser(uid: bigint, baseUserRecord: BaseUserRecord) {
-    const userRecord: UserRecord = {
-      id: uid,
-      ...baseUserRecord,
-    };
+  private async createUser(baseUserRecord: BaseUserRecord): Promise<bigint> {
     const response = await fetch(`${__url}/api/user-repository`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: __tvm_key,
       },
-      body: JSON.stringify(serialize(userRecord)),
+      body: JSON.stringify(serialize(baseUserRecord)),
     });
 
     if (!response.ok) {
-      console.error(`[AuthProxyService] Error on registering user with id ${uid}: ${response.statusText}`);
-      throw new ServerError(`Failed to register user with id ${uid}`);
+      console.error(`[AuthProxyService] Error on registering user: ${response.statusText}`);
+      throw new ServerError(`Failed to register user`);
     }
+    return new Promise<bigint>((resolve, reject) => {
+      response.text().then((text) => {
+        const uid = BigInt(text);
+        resolve(uid);
+        console.log(`[AuthProxyService] Created user with id ${uid}`);
+      }).catch((e) => {
+        reject(e);
+      });
+    });
   }
 
   private isTokenValid(jwtPayload: JwtPayload): boolean {
@@ -203,7 +211,7 @@ export class AuthProxyService {
       return;
     }
     for (const entry of entries) {
-      this.infos.set(entry.uid, {role: entry.role, status: entry.status});
+      this.infos.set(entry.uid, {uid: entry.uid, role: entry.role, status: entry.status});
     }
     console.log(`[AuthProxyService] Loaded user-infos data from ${AuthProxyService.USER_INFOS_FILENAME}`);
   }

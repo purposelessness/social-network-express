@@ -2,7 +2,7 @@ import express from 'express';
 import * as v from 'valibot';
 
 import {parseInteger, parseIntegerArraySafe} from '~src/libraries/parsers/common';
-import {UserSchema} from './entities';
+import {BaseUserSchema, UserSchema} from './entities';
 import {UserRepository} from './service';
 import serialize from '~src/libraries/parsers/converter';
 
@@ -26,9 +26,9 @@ export class UserRepositoryController {
   };
 
   public createUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const userRecord = v.parse(UserSchema, req.body);
-    await this.repository.createUser(userRecord);
-    res.status(201).send();
+    const userRecord = v.parse(BaseUserSchema, req.body);
+    const uid = await this.repository.createUser(userRecord);
+    res.status(201).send(serialize(uid));
   };
 
   public updateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {

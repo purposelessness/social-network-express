@@ -4,12 +4,13 @@ import fs from 'fs';
 import * as v from 'valibot';
 
 import {__data_dir} from '~src/config';
-import {User, UserRecord, UserSchema} from './entities';
+import {BaseUserRecord, User, UserRecord, UserSchema} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import serialize from '~src/libraries/parsers/converter';
 
 export class UserRepository {
   private static readonly SAVE_FILENAME = path.join(__data_dir, 'user-repository.json');
+  private static UNIQUE_ID = 0n;
 
   private users: Map<bigint, User> = new Map();
 
@@ -51,9 +52,10 @@ export class UserRepository {
     return this.users.has(id);
   }
 
-  public async createUser(userRecord: UserRecord): Promise<void> {
-    const user = User.fromRecord(userRecord);
+  public async createUser(baseUserRecord: BaseUserRecord): Promise<bigint> {
+    const user = User.fromBaseRecord(UserRepository.UNIQUE_ID++, baseUserRecord);
     this.users.set(user.id, user);
+    return user.id;
   }
 
   public async updateUser(userEntity: UserRecord): Promise<void> {
@@ -88,6 +90,7 @@ export class UserRepository {
     for (const user of users) {
       this.users.set(user.id, User.fromRecord(user));
     }
+    UserRepository.UNIQUE_ID = BigInt(this.users.size);
     console.log(`[UserRepository] Loaded users from ${UserRepository.SAVE_FILENAME}`);
   }
 
