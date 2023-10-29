@@ -8,6 +8,7 @@ import newsRepository from 'services/news-repository';
 import userRepository from '~services/user-repository';
 import userToFriendRepository from '~services/user-to-friend-repository';
 import userToNewsRepository from 'services/user-to-news-repository';
+import chatRepository from '~services/chat-repository';
 
 export default (server: express.Express) => {
   server.use('/api', authProxy.router.getRouter());
@@ -18,6 +19,7 @@ export default (server: express.Express) => {
   server.use('/api/user-to-friend-repository', auth, userToFriendRepository.router.getRouter());
   server.use('/api/user-to-news-repository', auth, userToNewsRepository.router.getRouter());
   server.use('/api/news-feed', auth, newsFeedService.router.getRouter());
+  server.use('/api/chat-repository', auth, chatRepository.router.getRouter());
 
   server.use('/api', errorHandler);
 };
