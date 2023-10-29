@@ -13,12 +13,16 @@ export class AuthProxyController {
 
   public login = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const request = v.parse(LoginRequestSchema, req.body);
-    const token = await this.service.login(request);
-    res.status(200).cookie('token', token, {
-      httpOnly: true,
+    const {uid, token} = await this.service.login(request);
+    const options: express.CookieOptions = {
+      httpOnly: false,
       sameSite: 'none',
       secure: true,
-    }).send();
+    };
+    res.status(200)
+        .cookie('token', token, options)
+        .cookie('uid', uid.toString(), options)
+        .send();
   };
 
   public register = async (req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -39,7 +39,7 @@ export class AuthProxyService {
     this.loadUserInfosData();
   }
 
-  public login = async (request: LoginRequest): Promise<string> => {
+  public login = async (request: LoginRequest): Promise<{ uid: bigint, token: string }> => {
     if (!this.authData.has(request.login)) {
       throw new NotFoundError('User not found');
     }
@@ -49,10 +49,14 @@ export class AuthProxyService {
       throw new ClientError('Wrong password');
     }
 
-    const payload = serialize(this.infos.get(this.uids.get(request.login)!)!);
-    return jwt.sign(payload, AuthProxyService.SECRET_KEY, {
-      expiresIn: AuthProxyService.TOKEN_EXPIRATION_TIME,
-    });
+    const uid = this.uids.get(request.login)!;
+    const payload = serialize(this.infos.get(uid)!);
+    return {
+      uid: uid,
+      token: jwt.sign(payload, AuthProxyService.SECRET_KEY, {
+        expiresIn: AuthProxyService.TOKEN_EXPIRATION_TIME,
+      }),
+    };
   };
 
   public register = async (request: RegisterRequest): Promise<void> => {
