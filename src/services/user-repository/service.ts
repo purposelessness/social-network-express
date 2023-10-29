@@ -3,7 +3,7 @@ import fs from 'fs';
 
 import * as v from 'valibot';
 
-import {__data_dir} from '~src/config';
+import {__data_dir, __public_dir} from '~src/config';
 import {BaseUserRecord, User, UserRecord, UserSchema} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import serialize from '~src/libraries/parsers/converter';
@@ -20,12 +20,15 @@ export class UserRepository {
 
   public async getUsers(ids?: bigint[]): Promise<User[]> {
     if (ids === undefined) {
-      return [...this.users.values()];
+      return [...this.users.values()].map((user) => ({
+        ...user,
+        imageUri: this.getUserImageLink(user.id),
+      }));
     } else {
       const result = [];
       for (const id of ids) {
         if (this.users.has(id)) {
-          result.push(this.users.get(id)!);
+          result.push(this.getUser(id));
         }
       }
       return result;
@@ -36,13 +39,16 @@ export class UserRepository {
     if (!this.users.has(id)) {
       throw new NotFoundError(`User with id ${id} does not exist`);
     }
-    return this.users.get(id)!;
+    return this.getUser(id);
   }
 
   public async getUserByName(name: string): Promise<User> {
     for (const user of this.users.values()) {
       if (user.name === name) {
-        return user;
+        return {
+          ...user,
+          imageUri: this.getUserImageLink(user.id),
+        };
       }
     }
     throw new NotFoundError(`User with name ${name} does not exist`);
@@ -71,6 +77,21 @@ export class UserRepository {
       throw new NotFoundError(`User with id ${id} does not exist`);
     }
     this.users.delete(id);
+  }
+
+  public getUserImageLink(id: bigint): string {
+    const filename = path.join(__public_dir, 'img', 'user', `${id}.jpg`);
+    if (fs.existsSync(filename)) {
+      return `/img/user/${id}.jpg`;
+    }
+    return '/img/user/default.jpg';
+  }
+
+  private getUser(id: bigint): User {
+    return {
+      ...this.users.get(id)!,
+      imageUri: this.getUserImageLink(id),
+    };
   }
 
   private load() {
