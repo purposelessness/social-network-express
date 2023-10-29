@@ -3,10 +3,11 @@ import fs from 'fs';
 
 import * as v from 'valibot';
 
-import {__data_dir} from '~src/config';
+import {__data_dir, __tvm_key, __url} from '~src/config';
 import {NewsEntryRecord, NewsEntrySchema, NewsRecord} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import {checkUserExistence} from '~src/libraries/checkers';
+import serialize from '~src/libraries/parsers/converter';
 
 export class NewsRepository {
   private static readonly SAVE_FILENAME = path.join(__data_dir, 'news-repository.json');
@@ -41,8 +42,26 @@ export class NewsRepository {
 
   public addNews = async (news: NewsRecord): Promise<bigint> => {
     await checkUserExistence(news.uid);
-
     const id = NewsRepository.UNIQUE_ID++;
+
+    await fetch(`${__url}/api/user-to-news-repository`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: __tvm_key,
+      },
+      body: JSON.stringify(serialize({
+        uid: news.uid,
+        newsId: id,
+      })),
+    }).then(async (response) => {
+      if (!response.ok) {
+        console.warn(`[NewsRepository] Error on adding news with id ${id} to user with id ${news.uid}: ${response.statusText}`);
+      }
+    }).catch((e) => {
+      console.warn(`[NewsRepository] Error on adding news with id ${id} to user with id ${news.uid}: ${e}`);
+    });
+
     this.news.set(id, {
       id: id,
       uid: news.uid,
@@ -76,6 +95,7 @@ export class NewsRepository {
     for (const news of allNews) {
       this.news.set(news.id, news);
     }
+    NewsRepository.UNIQUE_ID = BigInt(this.news.size);
     console.log(`[NewsRepository] Loaded all news from ${NewsRepository.SAVE_FILENAME}`);
   }
 

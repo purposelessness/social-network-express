@@ -97,6 +97,7 @@ export class AuthProxyService {
       request.body.authContext = {
         uid: 0n,
         role: Role.ADMIN,
+        status: Status.ACTIVE,
       };
       return;
     }
