@@ -2,7 +2,7 @@ import express from 'express';
 import * as v from 'valibot';
 
 import {parseInteger, parseIntegerArray} from '~src/libraries/parsers/common';
-import {BaseChatSchema, MessageSchema} from './entities';
+import {BaseChatSchema, BaseMessageSchema, MessageSchema} from './entities';
 import {ChatRepository} from './service';
 import serialize from '~src/libraries/parsers/converter';
 
@@ -38,7 +38,7 @@ export class ChatRepositoryController {
 
   public addMessageToChat = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const id = parseInteger('id', req.params['id']);
-    const message = v.parse(MessageSchema, req.body);
+    const message = v.parse(BaseMessageSchema, req.body);
     res.status(200).send(serialize(await this.repository.addMessageToChat(id, message)));
   }
 

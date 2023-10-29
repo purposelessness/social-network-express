@@ -2,6 +2,15 @@ import * as v from 'valibot';
 
 import {FullDateSchema, IntegerSchema} from '~src/libraries/parsers/common';
 
+export const BaseMessageSchema = v.object({
+  chatId: IntegerSchema('chatId'),
+  authorId: IntegerSchema('authorId'),
+  text: v.string('text'),
+  date: FullDateSchema('date'),
+});
+
+export type BaseMessageRecord = v.Output<typeof BaseMessageSchema>;
+
 export const MessageSchema = v.object({
   id: IntegerSchema('id'),
   chatId: IntegerSchema('chatId'),

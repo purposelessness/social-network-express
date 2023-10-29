@@ -4,7 +4,7 @@ import fs from 'fs';
 import * as v from 'valibot';
 
 import {__data_dir} from '~src/config';
-import {BaseChatRecord, ChatRecord, ChatSchema, MessageRecord} from './entities';
+import {BaseChatRecord, BaseMessageRecord, ChatRecord, ChatSchema} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import {checkUserExistence} from '~src/libraries/checkers';
 import serialize from '~src/libraries/parsers/converter';
@@ -64,10 +64,14 @@ export class ChatRepository {
     this.chats.delete(id);
   };
 
-  public addMessageToChat = async (id: bigint, message: MessageRecord): Promise<void> => {
+  public addMessageToChat = async (id: bigint, baseMessage: BaseMessageRecord): Promise<void> => {
     if (!this.chats.has(id)) {
       throw new NotFoundError(`Chat with id ${id} does not exist in chat repository`);
     }
+    const message = {
+      id: BigInt(this.chats.get(id)!.messages.length),
+      ...baseMessage,
+    };
     this.chats.get(id)!.messages.push(message);
   };
 
