@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import http from 'http';
 import https from 'https';
-
 import express from 'express';
 import sassMiddleware from 'node-sass-middleware';
 
@@ -14,6 +13,7 @@ import morgan from 'morgan';
 import {__front_src_dir, __project_dir, __public_dir} from '~src/config';
 import backendRouter from '~src/loaders/back-routes';
 import frontRouter from '~src/loaders/front-routes';
+import {initIo} from '~src/socket';
 
 const server = express();
 
@@ -59,6 +59,8 @@ const credentials = {
 
 const httpServer = http.createServer(server);
 const httpsServer = https.createServer(credentials, server);
+
+initIo(httpServer);
 
 httpServer.listen(8080, () => {
   console.log('Server started at http://localhost:8080/');

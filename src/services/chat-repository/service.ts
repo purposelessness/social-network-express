@@ -8,6 +8,7 @@ import {BaseChatRecord, BaseMessageRecord, ChatRecord, ChatSchema} from './entit
 import {NotFoundError} from '~src/types/errors';
 import {checkUserExistence} from '~src/libraries/checkers';
 import serialize from '~src/libraries/parsers/converter';
+import {getIo} from '~src/socket';
 
 export class ChatRepository {
   private static readonly SAVE_FILENAME = path.join(__data_dir, 'chat-repository.json');
@@ -73,6 +74,7 @@ export class ChatRepository {
       ...baseMessage,
     };
     this.chats.get(id)!.messages.push(message);
+    getIo().emit('message', serialize(message));
   };
 
   private load() {

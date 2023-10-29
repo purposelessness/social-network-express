@@ -8,6 +8,7 @@ import {NewsEntryRecord, NewsEntrySchema, NewsRecord} from './entities';
 import {NotFoundError} from '~src/types/errors';
 import {checkUserExistence} from '~src/libraries/checkers';
 import serialize from '~src/libraries/parsers/converter';
+import {getIo} from '~src/socket';
 
 export class NewsRepository {
   private static readonly SAVE_FILENAME = path.join(__data_dir, 'news-repository.json');
@@ -62,12 +63,14 @@ export class NewsRepository {
       console.warn(`[NewsRepository] Error on adding news with id ${id} to user with id ${news.uid}: ${e}`);
     });
 
-    this.news.set(id, {
+    const n = {
       id: id,
       uid: news.uid,
       text: news.text,
       createdAt: news.createdAt,
-    });
+    }
+    this.news.set(id, n);
+    getIo().emit('news', serialize(n));
     return id;
   };
 
