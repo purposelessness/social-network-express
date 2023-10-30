@@ -39,7 +39,7 @@ export class AuthProxyService {
     this.loadUserInfosData();
   }
 
-  public login = async (request: LoginRequest): Promise<{ uid: bigint, token: string }> => {
+  public login = async (request: LoginRequest): Promise<{ uid: bigint, role: Role, token: string }> => {
     if (!this.authData.has(request.login)) {
       throw new NotFoundError('User not found');
     }
@@ -50,9 +50,11 @@ export class AuthProxyService {
     }
 
     const uid = this.uids.get(request.login)!;
-    const payload = serialize(this.infos.get(uid)!);
+    const info = this.infos.get(uid)!;
+    const payload = serialize(info);
     return {
       uid: uid,
+      role: info.role,
       token: jwt.sign(payload, AuthProxyService.SECRET_KEY, {
         expiresIn: AuthProxyService.TOKEN_EXPIRATION_TIME,
       }),

@@ -13,7 +13,7 @@ export class AuthProxyController {
 
   public login = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const request = v.parse(LoginRequestSchema, req.body);
-    const {uid, token} = await this.service.login(request);
+    const {uid, role, token} = await this.service.login(request);
     const options: express.CookieOptions = {
       httpOnly: false,
       sameSite: 'none',
@@ -22,6 +22,7 @@ export class AuthProxyController {
     res.status(200)
         .cookie('token', token, options)
         .cookie('uid', uid.toString(), options)
+        .cookie('role', role, options)
         .send();
   };
 
